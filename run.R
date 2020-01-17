@@ -9,37 +9,17 @@ library(dbscan);
 library(stringr);
 library(gtools);
 
-#setwd("some_where_in_your_computer/package");
-setwd("/Users/mengli/Documents/projects/iso/package");
+#setwd("some_where_in_your_computer/intron_order");
+setwd("/Users/mengli/Documents/projects/iso/intron_order");
 
-
-#script.dir <- dirname(sys.frame(2)$ofile)
-#this.dir <- dirname(parent.frame(1)$ofile)
-
-
-####################################calculate pairwise intron orders#######################################################
-#script to remove sick in bed
-# awk '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$1"\t"$2"\t"$9"\t"$10"\t"$11"\t"$12}' hg19_gencode_from_ucsc.bed >
-# hg19_gencode_from_ucsc_nothick_nocds.bed
-
-# Align FASTQ reads with splice wise aligner. 
-## STAR, minimap2
-## samtools index <Bam file>
-
-# Calculated intron splicing order pairs
-## java -jar isoLarge.jar  anno/hg19_gencode_from_ucsc_nothick_nocds.bed  <bam_file> <output_file>
-
-# Run this manuscript in RStuido
-##  run.R
-
-# convert bed file into introns
-# code/run_sh/convert_bed_to_introns.sh
+#this.dir <- dirname(parent.frame(1)$ofile);
 
 
 ##############################prepare pairwise intron orders################################################################
 source("code/build_iso_object.R",echo=TRUE)
 
-files_all<-list.files("data/iso_3rd/",full.names =TRUE,pattern = "*unique_intron.tsv");
+#files_all<-list.files("data/iso_3rd/",full.names =TRUE,pattern = "*unique_intron.tsv");
+files_all<-list.files("data/iso_3rd/",full.names =TRUE);
 
 label<-"human"
 
@@ -61,6 +41,7 @@ build_iso_object(files_all,gene_trans_id_tbl,ucsc_intron_anno,is_large,t_result_
 
 
 ######################################build matrix graph MLO################################################################
+
 isoform_num_produce<-100
 read_count_threshold<-0
 draw_and_save_graph<-FALSE # not used 
@@ -95,8 +76,8 @@ t_igraph_list<-draw_3d(t_igraph_list,"./result/html/",t_alpha,FALSE);
 save( t_igraph_list, file="result/t_igraph_list.Rd",version = 2);
 
 
-
 ######################################################shiny#################################################################
+
 load("result/t_igraph_list.Rd");
 
 load("anno/gene_trans_id_map.Rd");
