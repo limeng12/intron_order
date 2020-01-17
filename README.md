@@ -21,16 +21,16 @@ ORACLE JDK8
 
 ## Steps
 
-### Align FASTQ reads with splice wise aligner. 
+### 1. Align FASTQ reads with splice wise aligner. 
 STAR, minimap2, et.al
 'samtools index <Bam file>'
 
-### Calculated intron splicing order pairs
+### 2. Calculated intron splicing order pairs
 'java -jar isoLarge.jar  anno/hg19_gencode_from_ucsc_nothick_nocds.bed  <bam_file> <output_file>'
 
 put the output file under data/iso_3rd/
 
-### Build intron splicing order graph and matrix
+### 3. Build intron splicing order graph and matrix
 Edit the run.R to change the working dir
 Run the below R script in Rstudio
 run.R
@@ -38,7 +38,9 @@ run.R
 ### Suggestions and comments are welcome:  limeng@picb.ac.cn
 
 
-## For non human genome, gene_id and transcript id file are download from ENSEMBL bioMart
+## For non human genome
+
+### gene_id and transcript id file are downloaded from ENSEMBL bioMart
 
 ### script to replace CDS position into TSS and TES in bed, with example:
 awk '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$1"\t"$2"\t"$9"\t"$10"\t"$11"\t"$12}' hg19_gencode_from_ucsc.bed >
