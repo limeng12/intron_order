@@ -4,16 +4,16 @@
 
 ### R packages, better use Rstudio
 
-library(shiny)
-library(networkD3)
-library(Sushi)
-library(readr)
-library(DT)
-library(dplyr)
-library(igraph)
-library(dbscan)
-library(stringr)
-library(gtools)
+'library(shiny)'
+'library(networkD3)'
+'library(Sushi)'
+'library(readr)'
+'library(DT)'
+'library(dplyr)'
+'library(igraph)'
+'library(dbscan)'
+'library(stringr)'
+'library(gtools)'
 
 ### If user prepare to call intron splicing order from their own BAM files, need install JAVA
 ORACLE JDK8
