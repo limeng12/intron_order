@@ -1,4 +1,3 @@
-# intron_order
 
 ## Prerequisite
 
