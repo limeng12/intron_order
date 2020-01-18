@@ -17,18 +17,18 @@ BiocManager::install("Sushi")
 ```
 
 ### If user prepare to call intron splicing order from their own BAM files, need install JAVA
-ORACLE JDK8
+ORACLE JDK8/JRE8
 
 
 ## Steps
 
-### 1. Align FASTQ reads with splice wise aligner. 
-STAR, minimap2, et.al
+### 1. Align FASTQ reads with splice-wise aligner. 
+STAR, minimap2, et.al, then index the bam file
 ```
 samtools index <Bam file>
 ```
 
-### 2. Calculated intron splicing order pairs
+### 2. Calculated intron splicing order pairs using a custome java program
 ```
 java -jar java/isoLarge.jar  anno/hg19_gencode_from_ucsc_nothick_nocds.bed <bam_file> <output_file>
 ```
@@ -36,7 +36,7 @@ java -jar java/isoLarge.jar  anno/hg19_gencode_from_ucsc_nothick_nocds.bed <bam_
 Then put the output file under data/iso_3rd/
 
 ### 3. Build intron splicing order graph and matrix
-Edit the run.R to change the working dir
+If user are not working with Rstudio, then need to edit the run.R to change the working dir
 
 Source the below R script in Rstudio.
 ```
