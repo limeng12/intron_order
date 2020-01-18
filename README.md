@@ -4,30 +4,16 @@
 
 ### R packages, better use Rstudio as I build the web viewer using shiny
 
-package within R
+packages within R
 
-library(shiny)
-
-library(networkD3)
-
-library(readr)
-
-library(DT)
-
-library(dplyr)
-
-library(igraph)
-
-library(dbscan)
-
-library(stringr)
-
-library(gtools)
+install.packages("shiny","networkD3","readr","DT","dplyr","igraph","dbscan","stringr","gtools")
 
 
 package within Bioconductor
 
-library(Sushi)
+install.packages("BiocManager")
+
+BiocManager::install("Sushi")
 
 
 ### If user prepare to call intron splicing order from their own BAM files, need install JAVA
@@ -54,6 +40,8 @@ Source the below R script in Rstudio.
 run.R
 
 ### Suggestions and comments are welcome:  limeng@picb.ac.cn
+
+
 
 
 ## For non human genome
