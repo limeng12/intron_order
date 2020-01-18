@@ -12,10 +12,6 @@ library(gtools);
 options(scipen=999);
 
 
-##get current file's directoy
-#this.dir <- dirname(sys.frame(1)$ofile);
-#setwd(this.dir);
-
 if (!requireNamespace("rstudioapi", quietly = TRUE))
   install.packages("rstudioapi")
 
