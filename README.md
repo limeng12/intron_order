@@ -4,7 +4,8 @@
 
 ### R packages, better use Rstudio as I build the web viewer using shiny
 
-####package within R
+package within R
+
 library(shiny)
 
 library(networkD3)
@@ -23,7 +24,9 @@ library(stringr)
 
 library(gtools)
 
-####package within Bioconductor
+
+package within Bioconductor
+
 library(Sushi)
 
 
