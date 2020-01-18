@@ -2,13 +2,12 @@
 
 ## Prerequisite
 
-### R packages, better use Rstudio
+### R packages, better use Rstudio as I build the web viewer using shiny
 
+####package within R
 library(shiny)
 
 library(networkD3)
-
-library(Sushi)
 
 library(readr)
 
@@ -23,6 +22,10 @@ library(dbscan)
 library(stringr)
 
 library(gtools)
+
+####package within Bioconductor
+library(Sushi)
+
 
 ### If user prepare to call intron splicing order from their own BAM files, need install JAVA
 ORACLE JDK8
@@ -43,7 +46,7 @@ put the output file under data/iso_3rd/
 ### 3. Build intron splicing order graph and matrix
 Edit the run.R to change the working dir
 
-Run the below R script in Rstudio
+Source the below R script in Rstudio.
 
 run.R
 
