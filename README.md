@@ -28,7 +28,7 @@ STAR, minimap2, et.al
 'samtools index <Bam file>'
 
 ### 2. Calculated intron splicing order pairs
-'java -jar isoLarge.jar  anno/hg19_gencode_from_ucsc_nothick_nocds.bed  <bam_file> <output_file>'
+'java -jar java/isoLarge.jar  anno/hg19_gencode_from_ucsc_nothick_nocds.bed  <bam_file> <output_file>'
 
 put the output file under data/iso_3rd/
 
