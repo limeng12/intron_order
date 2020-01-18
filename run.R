@@ -16,6 +16,9 @@ options(scipen=999);
 #this.dir <- dirname(sys.frame(1)$ofile);
 #setwd(this.dir);
 
+if (!requireNamespace("rstudioapi", quietly = TRUE))
+  install.packages("rstudioapi")
+
 library(rstudioapi)
 this.dir<-dirname(rstudioapi::getActiveDocumentContext()$path)
 setwd(this.dir);

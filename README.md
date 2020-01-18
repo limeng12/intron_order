@@ -53,9 +53,9 @@ run.R
 
 ### script to replace CDS position into TSS and TES in bed, with example:
 ```
-awk '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$1"\t"$2"\t"$9"\t"$10"\t"$11"\t"$12}' hg19_gencode_from_ucsc.bed >
+awk '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$1"\t"$2"\t"$9"\t"$10"\t"$11"\t"$12}' hg19_gencode_from_ucsc.bed > hg19_gencode_from_ucsc_nothick_nocds.bed
 ```
-hg19_gencode_from_ucsc_nothick_nocds.bed
+
 
 ### Convert transcript bed file into intron bed file, with example:
 ```
