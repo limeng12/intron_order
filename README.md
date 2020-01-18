@@ -6,7 +6,7 @@
 
 packages within R
 
-install.packages("shiny","networkD3","readr","DT","dplyr","igraph","dbscan","stringr","gtools")
+install.packages(c("shiny","networkD3","readr","DT","dplyr","igraph","dbscan","stringr","gtools") )
 
 
 package within Bioconductor
