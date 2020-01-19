@@ -7,8 +7,9 @@ cal_mlp<-function(t_igraph_list,output_file,t_alpha,t_read_count_threshold=0){
   #unlink(str_c("result/best_order/best_order.tsv" ) );
   unlink(output_file);
   
-  cat(c("gene_symbol\ttranscript_id\tp_value_log\tbest_order\tbayesian_factor\trelative_likelihood\n") ,file=str_c(output_file ) );
-  
+  #cat(c("gene_symbol\ttranscript_id\tp_value_log\tbest_order\tbayesian_factor\trelative_likelihood\n") ,file=str_c(output_file ) );
+  cat(c("gene_symbol\ttranscript_id\tp_value_log\tbest_order\n"),
+      file=str_c(output_file ) );
   #  i<-1;
   for(i in 1:length(t_igraph_list) ){
     
