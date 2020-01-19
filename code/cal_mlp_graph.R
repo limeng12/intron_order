@@ -41,13 +41,18 @@ cal_mlp<-function(t_igraph_list,output_file,t_alpha,t_read_count_threshold=0){
     #print( best_order_ls$best_order );
     
     
-    cat(
+   # cat(
+   #   
+   #   str_c(t_igraph_list[[i]]$gene_symbol,"\t",t_igraph_list[[i]]$trans_id,"\t",(best_order_ls$p_value),"\t", 
+   #         paste0(best_order_ls$best_order,collapse=","),"\t",best_order_ls$bs,"\t",
+   #         best_order_ls$rela_likeli_v,"\n"),
+   #   append=TRUE, file=str_c(output_file ) );
+    
+        cat(
       
       str_c(t_igraph_list[[i]]$gene_symbol,"\t",t_igraph_list[[i]]$trans_id,"\t",(best_order_ls$p_value),"\t", 
-            paste0(best_order_ls$best_order,collapse=","),"\t",best_order_ls$bs,"\t",
-            best_order_ls$rela_likeli_v,"\n"),
+            paste0(best_order_ls$best_order,collapse=","),"\n"),
       append=TRUE, file=str_c(output_file ) );
-    
     
     #write.table(best_order,file=str_c("result/best_order/",names(t_igraph_list)[i],".tsv" ),
     #            sep="\t",col.names = FALSE,row.names = FALSE  );
