@@ -25,7 +25,7 @@ source("code/build_iso_object.R",echo=TRUE)
 
 files_all<-list.files("data/iso_3rd/",full.names =TRUE);
 
-gene_trans_id_tbl<-"./anno/gene_id_trans_id.tsv";
+gene_trans_id_tbl<-"./anno/hg19_ensembl_gene_id_trans_id_map.tsv";
 
 ucsc_intron_anno<-"./anno/hg19_gencode_intron_from_ucsc.bed";
 
@@ -42,7 +42,10 @@ if(is_large){
 ###tmp file to store intron splicing order pairs
 t_result_path<-paste0("result/all_iso_data_",label,"_",if_uniq,".Rd") ;
 
-build_iso_object(files_all,gene_trans_id_tbl,ucsc_intron_anno,is_large,t_result_path);
+
+build_iso_object(files_all,gene_trans_id_tbl,ucsc_intron_anno,is_large,t_result_path, TRUE);
+####If the transcript id contain . in nature, then may following script instead
+##build_iso_object(files_all,gene_trans_id_tbl,ucsc_intron_anno,is_large,t_result_path, TRUE);
 
 
 ######################################build intron splicing matrix, graph and most likely order#########################
@@ -93,7 +96,11 @@ save( t_igraph_list, file="result/t_igraph_list.Rd",version = 2);
 
 load("result/t_igraph_list.Rd");
 
-load("anno/gene_trans_id_map.Rd");
+gene_trans_id_map<-read.table("anno/hg19_ensembl_gene_id_trans_id_map.tsv",
+                              header = FALSE,as.is = TRUE,sep = "\t");
+colnames(gene_trans_id_map)<-c("gene_id","trans_id","gene_symbol","trans_start","trans_end","strand",
+                               "chr","gene_start","gene_end");
+
 
 load("anno/sushi_trans_file.Rd");
 
