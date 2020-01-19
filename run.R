@@ -87,9 +87,10 @@ t_igraph_list<-get_members(t_igraph_list,t_alpha);
 ##most likely order
 t_igraph_list<-cal_mlp(t_igraph_list,"./result/best_order.tsv",t_alpha,read_count_threshold);
 
-##draw intron splicing graph
+##draw intron splicing order graph
 t_igraph_list<-draw_3d(t_igraph_list,"./result/html/",t_alpha,TRUE);
 
+##output intron splicing order adjacent matrix
 for( i in 1:length(t_igraph_list) ){
 
   write.table(t_igraph_list[[i]]$adjacency_matrix, file=str_c("./result/adj_matrix/",names(t_igraph_list)[i],".tsv" ),
