@@ -86,8 +86,16 @@ t_igraph_list<-get_adj("result/iso_test_unique_order_by_count_graph_output.pdf",
 t_igraph_list<-get_members(t_igraph_list,t_alpha);
 ##most likely order
 t_igraph_list<-cal_mlp(t_igraph_list,"./result/best_order.tsv",t_alpha,read_count_threshold);
+
 ##draw intron splicing graph
-t_igraph_list<-draw_3d(t_igraph_list,"./result/html/",t_alpha,FALSE);
+t_igraph_list<-draw_3d(t_igraph_list,"./result/html/",t_alpha,TRUE);
+
+for( i in 1:length(t_igraph_list) ){
+
+  write.table(t_igraph_list[[i]]$adjacency_matrix, file=str_c("./result/adj_matrix/",names(t_igraph_list)[i],".tsv" ),
+            sep="\t",col.names = FALSE,row.names = FALSE  );
+}
+
 
 save( t_igraph_list, file="result/t_igraph_list.Rd",version = 2);
 
