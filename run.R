@@ -12,7 +12,7 @@ library(gtools);
 options(scipen=999);
 
 
-if (!requireNamespace("rstudioapi", quietly = TRUE))
+if (!requireNamespace("rstudioapi", quietly = TRUE) )
   install.packages("rstudioapi")
 
 library(rstudioapi)
