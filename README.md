@@ -18,7 +18,7 @@ BiocManager::install("Sushi")
 ### Call intron splicing order from their own BAM files, need install JAVA
 ORACLE JDK8/JRE8
 
-## quick started
+## Auick started
 ```
 git clone https://github.com/limeng12/intron_order.git
 ```
