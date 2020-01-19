@@ -22,7 +22,7 @@ ORACLE JDK8/JRE8
 ```
 git clone https://github.com/limeng12/intron_order.git
 ```
-Source the below file
+Source the below file in Rstudio
 ```
 intron_order/run.R
 ```
@@ -53,7 +53,7 @@ intron_order/run.R
 
 
 
-## For non human genome
+## For non-human genome
 
 ### Prepare intron splicing order pairs calling annotation
 
