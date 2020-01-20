@@ -68,7 +68,7 @@ return_graph<-TRUE;
 load(t_result_path);
 
 
-source("code/draw.R");
+#source("code/draw.R");
 source("code/draw_3d.R");
 source("code/mlp3.R");
 source("code/get_adj.R");
