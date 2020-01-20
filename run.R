@@ -11,7 +11,7 @@ library(gtools);
 
 options(scipen=999);
 
-
+####set directory ####
 if (!requireNamespace("rstudioapi", quietly = TRUE) )
   install.packages("rstudioapi")
 
@@ -20,6 +20,14 @@ this.dir<-dirname(rstudioapi::getActiveDocumentContext()$path)
 setwd(this.dir);
 
 
+####key parameter####
+## number of isoform output, number of isoform wish to check, 
+## I sorted the output by read count support, so if produce too many isoforms, the last few may not accurate
+isoform_num_produce<-100
+
+
+                                      ################below are scripts################
+#################################################################################################################
 ##############################prepare pairwise intron orders###########################################################
 source("code/build_iso_object.R",echo=TRUE)
 
@@ -49,9 +57,6 @@ build_iso_object(files_all,gene_trans_id_tbl,ucsc_intron_anno,is_large,t_result_
 
 
 ######################################build intron splicing matrix, graph and most likely order#########################
-
-## number of isoform output 
-isoform_num_produce<-100
 
 ## the read count threahold
 read_count_threshold<-0
