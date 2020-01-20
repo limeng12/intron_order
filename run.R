@@ -42,13 +42,8 @@ label<-"human"
 ##deprecated, used when consider each intron one time 
 is_large=TRUE;
 
-if_uniq="uniq_intron";
-if(is_large){
-  if_uniq="not_uniq_intron";
-}
-
 ###tmp file to store intron splicing order pairs
-t_result_path<-paste0("result/all_iso_data_",label,"_",if_uniq,".Rd") ;
+t_result_path<-paste0("result/all_iso_data_",label,"_","not_uniq_intron",".Rd") ;
 
 
 build_iso_object(files_all,gene_trans_id_tbl,ucsc_intron_anno,is_large,t_result_path, TRUE);
@@ -66,6 +61,7 @@ read_count_threshold<-0
 t_alpha<-0.1;
 
 draw_and_save_graph<-FALSE;
+
 return_graph<-TRUE;
 
 load(t_result_path);
