@@ -31,6 +31,7 @@ isoform_num_produce<-100
 ##############################prepare pairwise intron orders###########################################################
 source("code/build_iso_object.R",echo=TRUE)
 
+####put user's own intron splicing order pairs file calculated by JAVA program under this dir
 files_all<-list.files("data/iso_3rd/",full.names =TRUE);
 
 gene_trans_id_tbl<-"./anno/hg19_ensembl_gene_id_trans_id_map.tsv";
