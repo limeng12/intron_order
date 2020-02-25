@@ -1,6 +1,26 @@
 library(gtools)
 library(stringr)
-##
+library(stringi)
+library(ggplot2)
+library(Rcpp)
+#   scater_compare_real_mat();
+
+#   scater_compare();
+
+#hill climbing
+#hill
+
+#dynamic
+#source("code/mlp8.R");
+#dynamic CPP
+sourceCpp("code/mlp9.cpp",cleanupCacheDir=FALSE);
+
+#source("code/mlp2.R")
+sourceCpp("code/mlp2.cpp",cleanupCacheDir=FALSE);
+
+##Cpp permutation
+sourceCpp("code/mlp3.cpp",cleanupCacheDir=FALSE);
+
 #  adj_mat<-t_igraph_list[[1]]$adjacency_matrix;
 #  ini_intron_order<-colnames(adj_mat)
 #  t_adj_mat<-adj_mat
@@ -8,32 +28,94 @@ library(stringr)
 
 #source("code/mlp2.R")
 
+disorder_p<-function(t_adj_mat,t_best_order,t_alpha_v){
+  
+  prob_bino<-0;
+  for(i in 1:(length(t_best_order) -1) ){
+    for(j in (i+1):length(t_best_order)){
+      A_i_j<-t_adj_mat[t_best_order[i],t_best_order[j]];
+      A_j_i<-t_adj_mat[t_best_order[j],t_best_order[i]];
+      
+      phi<-(A_i_j+t_alpha_v)/(A_i_j+A_j_i+2*t_alpha_v)
+      prob_bino<-prob_bino+dbinom(A_i_j,(A_i_j+A_j_i),phi,log=TRUE);
+      
+    }
+  }
+  
+  
+  prob_bino_null<-0;
+  for(i in 1:(length(t_best_order) -1) ){
+    for(j in (i+1):length(t_best_order)){
+      A_i_j<-t_adj_mat[t_best_order[i],t_best_order[j]];
+      A_j_i<-t_adj_mat[t_best_order[j],t_best_order[i]];
+      
+      phi<-0.5
+      prob_bino_null<-prob_bino_null+dbinom(A_i_j,(A_i_j+A_j_i),phi,log=TRUE);
+      
+    }
+  }
+  
+  df_t<-0;
+  for(i in 1:nrow(t_adj_mat)){
+    for(j in 1:ncol(t_adj_mat)){
+      if((i>j) && (t_adj_mat[i,j]+t_adj_mat[j,i]!=0 ) ){
+        df_t<-df_t+1;
+      }
+      
+    }
+  }
+  
+  chi_stat<- -2* ((prob_bino_null-prob_bino) );
+  
+  p_t<-pchisq(chi_stat,df= df_t ,lower.tail = FALSE, log.p=TRUE);
+  
+  p_t;
+}
+
 #can't be too small, influcence too much to the MLE
-
-
 
 find_path_global<-function(t_adj_mat, t_alpha_v=0.05){
   
   path_list<-NULL;
   
   ## 80% of transcrpts' intron number < 8;
-  if(nrow(t_adj_mat) < 8){
+  if(nrow(t_adj_mat) < 12){
     
-    path_list<-find_best_order_full2(t_adj_mat,colnames(t_adj_mat),t_alpha_v);
+    #path_list<-find_best_order_full2(t_adj_mat,colnames(t_adj_mat),t_alpha_v);
+    path_list<-find_best_order_full2_c(t_adj_mat,t_alpha_v);
+    
+  #}else if(nrow(t_adj_mat) < 15) {
+    
+    #path_list<-del_find_path_iter(t_adj_mat, t_alpha_v);
+  #  path_list<-hill(t_adj_mat,t_alpha_v);
+    
+  }else if(nrow(t_adj_mat) < 20){
+    #path_list<-find_opti_dynam(t_adj_mat,t_alpha_v);
+    path_list<-find_opti_dynam_r_cpp(t_adj_mat,t_alpha_v);
     
   }else{
-    
-    path_list<-del_find_path_iter(t_adj_mat,t_alpha_v);
+    #path_list<-del_find_path_iter(t_adj_mat, t_alpha_v);
+    #path_list<-hill(t_adj_mat,t_alpha_v);
+    path_list<-hill_c(t_adj_mat,t_alpha_v);
     
   }
   
-  best_score<-path_list$best_score
+  #best_score<-path_list$best_score;
   
   best_order<-path_list$best_order;
+  best_score<-calp2(t_adj_mat+t_alpha_v,best_order,t_alpha_v) ;
   
+  
+  number_of_maximum_order<-path_list$number_of_maximum_order
   
   m_ini_intron_order<-colnames(t_adj_mat)[order(as.numeric(colnames(t_adj_mat)))];
+  
   avg_li<-calp2(t_adj_mat+t_alpha_v,m_ini_intron_order,t_alpha_v) ;
+  
+  
+  #p-value of disorder
+  
+  disorder_p_value<-disorder_p(t_adj_mat,best_order,t_alpha_v);
   
   
   #chi_stat<- -2* log(exp(avg_li-best_score) );
@@ -45,21 +127,40 @@ find_path_global<-function(t_adj_mat, t_alpha_v=0.05){
   for(i in 1:nrow(t_adj_mat)){
     for(j in 1:ncol(t_adj_mat)){
       if((i>j) && (t_adj_mat[i,j]+t_adj_mat[j,i]!=0 ) ){
+      
+      if(
+          ( which( m_ini_intron_order==i ) < which( m_ini_intron_order==j ) ) !=
+          ( which( best_order==i ) < which( best_order==j ) )
+          
+      ) {
         df_t<-df_t+1;
+        
+      }
+        
       }
       
     }
   }
   
-  p_t<-pchisq(chi_stat,df= df_t ,lower.tail = FALSE, log.p=TRUE);
+  #pt_t<-log(0.5);
   
+  #if(chi_stat!=0){
+    p_t<-pchisq(chi_stat,df= df_t ,lower.tail = FALSE, log.p=TRUE);
+  #}
   
   if(is.infinite(p_t)){
     p_t<- -10000;
   }
   
+  if(!is.null(number_of_maximum_order)){
+    print(str_c("Best path number: ", number_of_maximum_order ) );
+  }
+  
   list(p_value=p_t,
-       best_order=best_order,bs=chi_stat*(-1)/2,rela_likeli_v=rela_likeli(0,avg_li,df_t,best_score) );
+       best_order=best_order,bs=chi_stat*(-1)/2,
+       rela_likeli_v=rela_likeli(0,avg_li,df_t,best_score), 
+       number_of_maximum_order=number_of_maximum_order,
+       disorder_p_value=disorder_p_value);
   
 }
 
@@ -76,220 +177,12 @@ rela_likeli<-function(k_1,l_1, k_2,l_2){
 }
 
 
-
-
-
-del_find_path_iter<-function(t_adj_mat2, t_alpha_v=0.05){
-  # t_adj_mat<-t_adj_mat[1:11,1:11]
-  
-  t_adj_mat<-t_adj_mat2
-  
-  ##likehood matrix
-  t_adj_mat_li<-t_adj_mat;
-  
-  colnames(t_adj_mat_li)<-colnames(t_adj_mat);
-  rownames(t_adj_mat_li)<-rownames(t_adj_mat);
-  
-  
-  for(i in 1:nrow(t_adj_mat_li)){
-    for(j in 1:ncol(t_adj_mat_li)){
-      if(i==j){
-        t_adj_mat_li[i,j]<-t_adj_mat_li[j,i]<-0;
-      }
-      
-      if(t_adj_mat_li[i,j]+t_adj_mat_li[j,i]==0){
-        next;
-      }
-      
-      if(i>j){
-        p<- (t_adj_mat_li[i,j]+t_alpha_v)/(t_adj_mat_li[i,j]+t_adj_mat_li[j,i]+2*t_alpha_v);
-        
-        t_adj_mat_li[i,j]<-p
-        t_adj_mat_li[j,i]<-1-p
-      }
-      
-    }
-    
-  }
-  
-  star_grow<-c();
-  
-  #m_best_order_list<-list();
-  max_order_count<-5000;
-  m_best_order_list<-list();
-  
-  ###consier second-best rowSums
-  max_idex_consider_num<-as.integer( nrow(t_adj_mat_li)/10 );
-  
-  if(max_idex_consider_num<3){
-    max_idex_consider_num<- 3;
-  }
-  
-  #if(nrow(t_adj_mat_li))
-  #del_iter(t_adj_mat_li,star_grow);
-  #[[str_c(sample(1:100000000,1),
-  #                       sample(1:100000000,1) ,"_")]] <-
-    
-  best_order_list<-del_iter(t_adj_mat_li, star_grow, max_idex_consider_num, m_best_order_list, max_order_count);
-  
-  
-  li_c<-c();
-  
-  t_adj_mat<-t_adj_mat2+t_alpha_v;
-  
-  
-  for(i in 1:length(best_order_list ) ){
-    
-    li_c<-c(li_c,calp2(t_adj_mat,best_order_list[[i]],t_alpha_v) );
-    
-  }
-  
-  
-  max_index<-which(max(li_c)==li_c);
-  
-  print(str_c("Best path number: ", length(max_index) ) );
-  
-  max_index<-which.max(li_c);
-  
-  
-  best_order<-best_order_list[[max_index]];
-  
-  best_score<-calp2(t_adj_mat,best_order_list[[max_index]],t_alpha_v);
-  
-  t_igraph_list<-best_order_list[[max_index]];
-  
-  
-  list(best_score=best_score,best_order=best_order);
- 
-  #c( p_t, best_order );
-  
-}
-
-
-
-
-del_iter<-function(t_adj_mat_li, star_grow, t_max_idex_consider_num, best_order_list, max_order_count=1000){
-  #max_idex_consider_num<-4;
-  
-  
-  if(length(best_order_list)> max_order_count){
-    return(best_order_list);
-  }
-  
-  
-  if( nrow(t_adj_mat_li)==0 ){
-    best_order_list[[str_c(sample(1:100000000,1), sample(1:100000000,1) ,"_") ]]<-star_grow 
-    
-    return(best_order_list);
-    
-  }
-  
-  #while(  (nrow(t_adj_mat_li)>0 ) ){
-  
-  #the sum likehood  of each node spliced before all others
-  row_sum_li<-rowSums(t_adj_mat_li);
-  
-  max_index<-which(max(row_sum_li)==row_sum_li);
-  
-  
-  row_sum_li_t<-row_sum_li;
-  
-  while(length(max_index)<t_max_idex_consider_num  ){
-    
-    row_sum_li_t[max(row_sum_li_t)==row_sum_li_t]<-0;
-    
-    if( sum(row_sum_li_t)==0 ){
-      break;
-    }
-    
-    max_index<-c(max_index, which(max(row_sum_li_t)==row_sum_li_t) );
-    #max_index<-which(max(row_sum_li)=row_sum_li);
-    
-  }
-  
-  
-  #print(length(max_index) );
-  
-  star_grow_back<-star_grow;
-  
-  t_adj_mat_li_back<-t_adj_mat_li;
-  
-  for( i in 1:length(max_index) ){
-    
-    t_adj_mat_li<-t_adj_mat_li_back;
-    
-    best_start<-rownames(t_adj_mat_li)[ max_index[i] ];
-    
-    #if(is.na(best_start) )
-    #{print("bug");
-    #  View(max_index)
-    #  View(t_adj_mat_li);
-    #  stop();
-    # }
-
-    star_grow_new<-c(star_grow_back, best_start);
-    #t_adj_mat_li[best_start,]<-;
-    #t_adj_mat_li[,best_start]<-;
-    
-    
-    t_adj_mat_li<-t_adj_mat_li[setdiff(rownames(t_adj_mat_li),best_start), , drop=FALSE];
-    
-    
-    ##if ncol(t_adj_mat_li) is 0, then only one element in t_adj_mat_li_back, thus max_index's length is 1
-    if(ncol(t_adj_mat_li)>0){
-      t_adj_mat_li<-t_adj_mat_li[,setdiff(colnames(t_adj_mat_li),best_start),drop=FALSE]
-    }else{
-      best_order_list[[str_c(sample(1:100000000,1), sample(1:100000000,1) ,"_") ]]<-star_grow_new;
-      
-      return(best_order_list);
-    }
-      
-    
-    
-    if(nrow(t_adj_mat_li)>0){
-      #best_order_list[[length(best_order_list)+1]]<-
-      #  del_iter(t_adj_mat_li,star_grow_new);
-
-      tmp_list<-list();
-      
-      tmp_list<-del_iter(t_adj_mat_li,star_grow_new,
-               t_max_idex_consider_num,best_order_list,max_order_count)
-      
-      best_order_list<-unique( c(best_order_list, tmp_list) );
-      
-    }else{
-      best_order_list[[str_c(sample(1:100000000,1), sample(1:100000000,1) ,"_") ]]<-star_grow_new 
-      return(best_order_list);
-    }
-    
-    
-  }
-  
-  return(best_order_list);
-  
-}
-
-
-
-calp2<-function(t_adj_mat,t_intron_order,t_alpha_v){
-  
-  #t_adj_mat<-t_adj_mat+t_alpha_v;
+calp2<-function(t_adj_mat, t_intron_order, t_alpha_v){
   
   p_all<-0;
   
-  #combn(t_intron_order,2)
-  
   #for(i in 1:(length(t_intron_order)-1) ){
   order_comb<-combn(t_intron_order,2);
-  
-  ###find all the order pairs that consistent of the input order(t_intron_order)
-  #order_comb<-matrix(ncol=0,nrow = 2);
-  #for(i in 1:(length(t_intron_order)-1) ){
-  
-  #  one_pair<-as.character(combn(t_intron_order[(i+1):length(t_intron_order)],1));
-  
-  #  order_comb<-cbind(order_comb,matrix(c(rep(i,length(one_pair)),one_pair),byrow = TRUE,nrow = 2 )   );
-  #}
   
   
   #calculate the prob
@@ -303,7 +196,7 @@ calp2<-function(t_adj_mat,t_intron_order,t_alpha_v){
       next;
     }
     
-    p_one<-log(    t_adj_mat[order_first,order_next]/
+    p_one<-log( t_adj_mat[order_first,order_next]/
                      (t_adj_mat[order_first,order_next]+t_adj_mat[order_next,order_first] ) );
     #print(p_one)
     
@@ -315,10 +208,8 @@ calp2<-function(t_adj_mat,t_intron_order,t_alpha_v){
 }
 
 
-
-
-find_best_order_full2<-function(adj_mat,ini_intron_order,t_alpha_v,
-                                suff_index_start=1,suff_index_end=length(ini_intron_order)){
+find_best_order_full2<-function(adj_mat,ini_intron_order,t_alpha_v,plot_dis=FALSE,output_id="",
+                                suff_index_start=1,suff_index_end=length(ini_intron_order) ){
   
   #best_intron_order<-m_ini_intron_order<-ini_intron_order;
   
@@ -327,12 +218,12 @@ find_best_order_full2<-function(adj_mat,ini_intron_order,t_alpha_v,
   t_adj_mat<-adj_mat+t_alpha_v;
   
   
-  
   int_num<-suff_index_end-suff_index_start+1;
   
   allPerms_mat<-permutations(n = int_num, r = int_num, v = ini_intron_order[suff_index_start:suff_index_end]);
   
   li<-rep(NA,nrow(allPerms_mat) );
+  
   for( i in 1:nrow(allPerms_mat) ){
     if(i %% 10000 ==1){
       #   print(i);
@@ -346,11 +237,31 @@ find_best_order_full2<-function(adj_mat,ini_intron_order,t_alpha_v,
     
   }
   
+  
+  if(plot_dis){
+    a<-stri_rand_strings(1,100)
+    
+    print(paste0("result/mlv_dis/",output_id,".jpeg"))
+    
+    jpeg(paste0("result/mlv_dis/",output_id,".jpeg"),width = 600, height=500 );
+    li_order<-sort(li);
+    
+    #qplot(1:length(li_order),li_order,xlab="sorted intron order",ylab="Log likelihood value");
+    plot(1:length(li_order),li_order,xlab="sorted intron order",
+         ylab="Log likelihood value",pch=4);# type="s",cex=0.5
+    dev.off();
+    
+  }
+  
   best_intron_order<-
     as.character(allPerms_mat[which.max(li),]);
   
+  number_of_maximum_order<-sum(li==max(li));
   
-  list(best_score=max(li),best_order=best_intron_order);
+  #print(str_c("Best path number: ", number_of_maximum_order ) );
+  
+  
+  list(best_score=max(li),best_order=best_intron_order,number_of_maximum_order=number_of_maximum_order);
   
   #return(best_intron_order);
   
@@ -358,97 +269,94 @@ find_best_order_full2<-function(adj_mat,ini_intron_order,t_alpha_v,
 
 
 
-scater_compare<-function(){
-  dyn<-c()
+permute_find_opti<-function(t_adj_mat,init_order, t_alpha_v, only_best=TRUE ){
   
-  opti<-c();
+  best_order_list<-list()
+  best_order_list[[1]]<-init_order;
   
-  for( i in 1:1000){
-    a<-compare(0.1);
+  best_order_v<-calp2(t_adj_mat, init_order, t_alpha_v);
+  
+  #calp2(t_adj_mat, t_intron_order, t_alpha_v)
+  
+  for(i in 1:length(init_order)){
     
-    dyn<-c(dyn,a[1])
-    
-    opti<-c(opti,a[2])
-    
-  }
-  
-  pdf("result/compare_dyn_opti.pdf")
-  scatter.smooth(dyn,opti,xlab="likelihood value by dynamic",
-                 ylab="likelihood value by permutation",
-                 main="random shuffer 1000 times"
-                 );
-  
-  
-  dev.off();
-}
-
-
-#  t_alpha_v<-0.1
-compare<-function( t_alpha_v){
-  
-  t<-200
-  adj_mat <- matrix(nrow = t,ncol = t);
-  
-  colnames(adj_mat)<-1:t
-  rownames(adj_mat)<-1:t
-  
-  
-  for( i in 1:nrow(adj_mat)){
-    for( j in 1:ncol(adj_mat)){
-      if(i!=j){
-        #p<-runif(1)
-        adj_mat[i,j]<-rpois(1,20);
-        adj_mat[j,i]<-rpois(1,15);
-      }
-      if(i==j){
-        adj_mat[i,j]<-0;
-      }
+    for(j in 1:length(init_order)){
       
-    }
-  }
-  
-  
-  t_adj_mat2<-adj_mat[1:t,1:t, drop=FALSE];
-  
-  t_adj_mat3<-t_adj_mat2;
-  
-  for(i in 1:nrow(t_adj_mat3) ){
-    for(j in 1:ncol(t_adj_mat3) ){
-      
-      if(i>j){
-        
-        p_minus<-t_adj_mat3[i,j]-t_adj_mat3[j,i];
-        
-        p_minus_rev<-t_adj_mat3[j,i]-t_adj_mat3[i,j];
-        
-        t_adj_mat3[i,j]<-p_minus;
-        
-        t_adj_mat3[j,i]<-p_minus_rev;
+      for(k in 1:length(best_order_list)){
+        if(i<j){
+          t_intron_order<-best_order_list[[k]];
+          
+          t<-t_intron_order[i];
+          t_intron_order[i]<-t_intron_order[j];
+          
+          t_intron_order[j]<-t;
+          #t_intron_order[i]<-t_intron_order[j];
+          
+          t_best_order_v<-calp2(t_adj_mat, t_intron_order, t_alpha_v);
+          
+          if(t_best_order_v>best_order_v){
+            best_order_list[[k]]<-t_intron_order
+            
+            best_order_v<-t_best_order_v
+          }
+          
+          if((!only_best) && (t_best_order_v==best_order_v) && (length(best_order_list)<100)){
+            best_order_list[[length(best_order_list)+1]]<-t_intron_order
+
+          }
+        }
       }
     }
+    
+    
   }
   
-  path1<-del_find_path_iter(t_adj_mat2,t_alpha_v);
-  
-  #path3<-del_find_path_iter2(t_adj_mat2,t_alpha_v);
-  
-  
-  path2<-find_best_order_full2(t_adj_mat2,colnames(t_adj_mat2),t_alpha_v);
-  
-  
-  print(path1$best_order);
-  dyna<-calp2(t_adj_mat2,path1$best_order,t_alpha_v);
-  
-  
-  #print(path3$best_order)
-  #calp2(t_adj_mat2,path3$best_order,0.05);
-  
-  
-  print(path2$best_order)
-  opti<-calp2(t_adj_mat2,path2$best_order,t_alpha_v);
-  
-  return( c( dyna,opti) );
-  
+  return(best_order_list)
 }
 
+# 
+# test<-function( t_alpha_v){
+#   
+#   t<-2
+#   
+#   adj_mat <- matrix(nrow = t,ncol = t);
+#   
+#   colnames(adj_mat)<-1:t
+#   rownames(adj_mat)<-1:t
+#   
+#   
+#   for( i in 1:nrow(adj_mat)){
+#     for( j in 1:ncol(adj_mat)){
+#       if(i!=j){
+#         #p<-runif(1)
+#         adj_mat[i,j]<-rpois(1,20);
+#         adj_mat[j,i]<-rpois(1,15);
+#         
+#         adj_mat[i,j]<-adj_mat[j,i]<-1;
+#         
+#       }
+#       if(i==j){
+#         adj_mat[i,j]<-0;
+#       }
+#       
+#     }
+#   }
+#   
+#   
+#   t_adj_mat2<-adj_mat[1:t,1:t, drop=FALSE];
+#   
+#   #t_adj_mat3<-t_adj_mat2;
+# 
+#   
+#   path1<-find_path_global(t_adj_mat2,t_alpha_v);
+#   
+#   disorder_p_v<-disorder_p(t_adj_mat2,path1$best_order,t_alpha_v);
+#   
+#   
+#   #print("Test MLO algorithm")
+#   return(path1) ;
+# }
+# 
+# 
+# test(0.1);
 

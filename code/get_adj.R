@@ -1,17 +1,15 @@
 #setwd("/Users/mengli/Documents/projects/iso");
 library(igraph);
 library(networkD3);
-library(stringi)
-strReverse <- function(x)
-  sapply(lapply(strsplit(x, NULL), rev), paste, collapse="")
+library(stringi);
 
 source("code/map.R");
 source("code/to_gephi.R");
 
 source("code/triangle_star_shapes.R");
+source("code/utils.R")
 
-
-get_adj<-function(output_path,t_iso_final,t_iso_slow_sumary,number_transcript_calculated,read_count_t,
+get_adj<-function(output_path,t_iso_final,t_iso_slow_sumary,number_transcript_calculated,
                   save_file=FALSE,return_graph_list=FALSE){
   
   
@@ -25,17 +23,13 @@ get_adj<-function(output_path,t_iso_final,t_iso_slow_sumary,number_transcript_ca
                               c("gene_symbol","id","gencode_intron_o_first",
                                 "gencode_intron_o_next","strand","read_count","first","nexti") ]);
     
-    iso_1<-iso_1[iso_1[,"read_count"]>=read_count_t,];
-    
-    
     iso_1[,"gencode_intron_o_first"]<-as.character(iso_1[,"gencode_intron_o_first"]);
     iso_1[,"gencode_intron_o_next"]<-as.character(iso_1[,"gencode_intron_o_next"]);
     
+    all_ints<-unique( c(iso_1[,"gencode_intron_o_first"],iso_1[,"gencode_intron_o_next"]) );
     
-    all_ints<-unique(c(iso_1[,"gencode_intron_o_first"],iso_1[,"gencode_intron_o_next"]))
-    
+    ##all the intron numbers
     intron_number_position_index<-str_count(all_ints[1],"_")+1
-    
     
     t_gene_symbol<-as.character(iso_1[1,"gene_symbol"]);
     t_trans_id<-iso_1[1,"id"];
@@ -46,64 +40,46 @@ get_adj<-function(output_path,t_iso_final,t_iso_slow_sumary,number_transcript_ca
     print(str_c( g,":",t_gene_symbol,":",t_trans_id) );
     
     
-    
+    ##total number of introns
     t_total_intron_count<- t_iso_slow_sumary[g,"int_count"];
     
-    
-    
+    ##make intron splicing order matrix
     adjacency_matrix<-matrix(0,nrow=(t_total_intron_count),ncol=(t_total_intron_count) );
     rownames(adjacency_matrix)<-(1:t_total_intron_count);
     colnames(adjacency_matrix)<-(1:t_total_intron_count);
     
+    ##
+    gencode_intron_o_first_number<-
+      as.character(sapply(str_split((iso_1[,"gencode_intron_o_first"]),"_"),"[", intron_number_position_index) );
+    
+    gencode_intron_o_next_number<-
+      as.character(sapply(str_split((iso_1[,"gencode_intron_o_next"]),"_"),"[", intron_number_position_index) );
+    
     
     for(i in 1:nrow(iso_1)){
-        gencode_intron_o_first_number<-
-          as.character(sapply(str_split((iso_1[i,"gencode_intron_o_first"]),"_"),"[", intron_number_position_index) );
-        
-        gencode_intron_o_next_number<-
-          as.character(sapply(str_split((iso_1[i,"gencode_intron_o_next"]),"_"),"[", intron_number_position_index) );
-        
-        adjacency_matrix[ gencode_intron_o_first_number , gencode_intron_o_next_number ]<-(iso_1[i,"read_count"]);
+        adjacency_matrix[ gencode_intron_o_first_number[i] , gencode_intron_o_next_number[i] ]<-(iso_1[i,"read_count"]);
     }
-      
+    
+    ##add node size and color
+    node_size<-rep(10, t_total_intron_count)
+    names(node_size)<-1:t_total_intron_count; 
+    
+    node_color=rep("green", t_total_intron_count );
+    names(node_color)<-1:t_total_intron_count;
     
     
-    g2<-graph_from_adjacency_matrix(adjacency_matrix,mode="directed",weighted=TRUE);
-      
-    post_evidence_count_t_v<-rep(0,length(V(g2)));
-      
-    for( i in 1:length(V(g2)) ){
-      #print(i);
-      this_v_order<-as.numeric( names(V(g2)[i]) );
-        
-      neighbors<-neighbors(g2,  V(g2)[i],mode="in");
-        
-      #neighbors_orders<-as.numeric( sapply(strsplit(names(neighbors),"_"),"[",2) );
-      neighbors_orders<-as.numeric( names(neighbors) )
-        
-      post_evidence_count<-sum(neighbors_orders>this_v_order,na.rm = TRUE);
-      post_evidence_count_t_v[i]<-post_evidence_count
-
-        
-    }
-      
+    percent_coverage_pair<-cal_intron_pair_cov(adjacency_matrix);
     
-    node_size=map(post_evidence_count_t_v,c(8.2,50.6) );
-    node_size[is.na(node_size)]=min(node_size,na.rm = TRUE);
-      
-    names(node_size)<-V(g2)$name;# sapply(str_split(V(g2)$name,":"),"[",1);
-      
-    node_color=rep("green",length(V(g2)) );
-    names(node_color)<-V(g2)$name;# sapply(str_split(V(g2)$name,":"),"[",1 );
-      
-      
+    
     igraph_list[[str_c(t_trans_id) ]]<-
       list(
         gene_symbol=t_gene_symbol,
         trans_id=t_trans_id,
         adjacency_matrix=adjacency_matrix,
-        edge_count=(iso_slow_sumary[g,"edge_count"]),
-        g2=g2,
+        percent_coverage_pair=percent_coverage_pair,
+        #coverage_pair=count_of_nonzero_ele,
+        intron_pair_count=(t_iso_slow_sumary[g,"intron_pair_count"]),
+        #g2=g2,
         node_size=node_size,
         node_color=node_color
       );

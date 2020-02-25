@@ -12,7 +12,7 @@ draw_3d<-function(tt_igraph_list,output_path,t_alpha_v=0.05,output_graph=FALSE){
     for( i in 1:length(tt_igraph_list) ){
       
       
-      print(paste0(i,":",names(t_igraph_list)[i]) );
+      print(paste0(i,":",names(tt_igraph_list)[i]) );
       
       #mermbers <- membership(cluster_walktrap(tt_igraph_list[[i]]) );
       
@@ -20,7 +20,7 @@ draw_3d<-function(tt_igraph_list,output_path,t_alpha_v=0.05,output_graph=FALSE){
       
       #t_net_one$links$value<-t_net_one$links$value/(max(t_net_one$links$value))*10;
       
-      t_charge<- (-2*(   tt_igraph_list[[i]]$edge_count )  );
+      t_charge<- (-2*(   tt_igraph_list[[i]]$intron_pair_count )  );
       
       if(t_charge< -80){
         t_charge<- -80
@@ -32,7 +32,7 @@ draw_3d<-function(tt_igraph_list,output_path,t_alpha_v=0.05,output_graph=FALSE){
       print(t_charge);
       
       #t_linkDistance<-500/iso_slow_sumary[i,"int_count"];
-      t_linkDistance<-(1*(   tt_igraph_list[[i]]$edge_count )  );
+      t_linkDistance<-(1*(   tt_igraph_list[[i]]$intron_pair_count )  );
       
       if(t_linkDistance>30){
         t_linkDistance<-30
@@ -52,10 +52,11 @@ draw_3d<-function(tt_igraph_list,output_path,t_alpha_v=0.05,output_graph=FALSE){
       
       #mermbers <- membership(cluster_fast_greedy(g2) );
       
-      #g2<-graph_from_adjacency_matrix(adjacency_matrix,mode="directed",weighted=TRUE);
+      g2<-graph_from_adjacency_matrix(tt_igraph_list[[i]]$adjacency_matrix,mode="directed",weighted=TRUE);
       
-      t_net_one<-igraph_to_networkD3(tt_igraph_list[[i]]$g2,mermbers);
-      
+      #t_net_one<-igraph_to_networkD3(tt_igraph_list[[i]]$g2,mermbers);
+      t_net_one<-igraph_to_networkD3(g2,mermbers);
+
       
       #edge_width=map( E(g2)$weight, c(0.25,6) );
       

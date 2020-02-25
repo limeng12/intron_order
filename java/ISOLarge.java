@@ -63,6 +63,16 @@ public class ISOLarge {
 		
 		String out_path = args[2];
 		
+		/*
+		HashSet<String> target_trans=new HashSet<String>();
+		
+		if(args.length>3) {
+			
+			target_trans=Reada5a3.readTranscripts(args[3]);
+		
+		}
+		*/
+		
 		int intron_flank_threshold=20;
 		
 		if(args.length>3) {
@@ -80,8 +90,8 @@ public class ISOLarge {
 		}
 		
 		
+		//one isoform's exon maybe in another isoform's intron region
 		boolean consider_exon_in_intron=true;
-		
 		
 		if(args.length>6) {
 			e_map=Reada5a3.read5a3(args[6]);
@@ -152,9 +162,20 @@ public class ISOLarge {
 			String strand=feat.getStrand().toString();
 			String trans_name=feat.getName();
 			
+			//String[] array = trans_name.split("\\.",-1); 
+			
+			//trans_name=array[0];
+			
+			//if(!target_trans.contains(trans_name) ) {
+			//	continue;
+			//}
+			
+			
 			int trans_start=feat.getStart();
 			
 			int trans_end=feat.getEnd();
+			
+			
 
 			/*
 			 * record all intron coordiantes, if juntioin containing read doesn't compatible with 
@@ -300,6 +321,17 @@ public class ISOLarge {
 					
 					boolean has_N = recode.getCigar().containsOperator(CigarOperator.N);
 					
+					int anchor_region_len=100;
+					
+					if(anchor_region_len> (right_exon_start-left_exon_end-1)) {
+						anchor_region_len=right_exon_start-left_exon_end-1;
+					}
+					
+					if(intron_flank_threshold> (right_exon_start-left_exon_end-1)) {
+						intron_flank_threshold=right_exon_start-left_exon_end-1-1;
+					}
+					
+					
 					if(has_N) {
 						//int[] att = recode.getSignedIntArrayAttribute("jI");
 						
@@ -370,17 +402,18 @@ public class ISOLarge {
 				         *  and the minimum bases in this region is intron_flank_threshold
 				         *  
 				         */
+							
 						cover_left = (no_left_sj) & (
-								( (recode.getStart() < (right_exon_start - intron_flank_threshold)) &
-								(recode.getEnd() > (left_exon_end - 80) )    ) |
-								(   (recode.getStart() < (left_exon_end + 80) )  &
-								(recode.getEnd() > (left_exon_end + intron_flank_threshold)) )
+								( (recode.getStart() <= (right_exon_start - intron_flank_threshold)) &
+								(recode.getEnd() >= (right_exon_start - anchor_region_len+intron_flank_threshold) )    ) |
+								(   (recode.getStart() <=(left_exon_end + anchor_region_len-intron_flank_threshold) )  &
+								(recode.getEnd() >= (left_exon_end + intron_flank_threshold)) )
 								);
 						}else {
 							cover_left = (no_left_sj) & (
-									( (recode.getStart() < (right_exon_start - intron_flank_threshold))    ) &
+									( (recode.getStart() <= (right_exon_start - intron_flank_threshold))    ) &
 									(   
-									(recode.getEnd() > (left_exon_end + intron_flank_threshold)) )
+									(recode.getEnd() >= (left_exon_end + intron_flank_threshold)) )
 									);
 						}
 						
@@ -397,15 +430,15 @@ public class ISOLarge {
 					}else {
 						if(consider_exon_in_intron) {
 
-						cover_left = ( (recode.getStart() < (right_exon_start - intron_flank_threshold)) &
-								(recode.getEnd() > (right_exon_start - 80) )    ) |
-								(   (recode.getStart() < (left_exon_end + 80) )  &
-								(recode.getEnd() > (left_exon_end + intron_flank_threshold)) );
+						cover_left = ( (recode.getStart() <= (right_exon_start - intron_flank_threshold)) &
+								(recode.getEnd() >= (right_exon_start - anchor_region_len+intron_flank_threshold) )    ) |
+								(   (recode.getStart() <= (left_exon_end + anchor_region_len-intron_flank_threshold) )  &
+								(recode.getEnd() >= (left_exon_end + intron_flank_threshold)) );
 						}else {
 							
-							cover_left = ( (recode.getStart() < (right_exon_start - intron_flank_threshold))  ) &
+							cover_left = ( (recode.getStart() <= (right_exon_start - intron_flank_threshold))  ) &
 									(  
-									(recode.getEnd() > (left_exon_end + intron_flank_threshold)) );
+									(recode.getEnd() >= (left_exon_end + intron_flank_threshold)) );
 						}
 				
 						
