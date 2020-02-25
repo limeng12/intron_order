@@ -48,13 +48,9 @@ t_result_path<-paste0("result/all_iso_data_",label,"_","not_uniq_intron",".Rd") 
 
 build_iso_object(files_all,gene_trans_id_tbl,ucsc_intron_anno,is_large,t_result_path,
                  read_count_threshold=read_count_threshold, TRUE);
-####If the transcript id contain . in nature, then may following script instead
-##build_iso_object(files_all,gene_trans_id_tbl,ucsc_intron_anno,is_large,t_result_path, TRUE);
 
 
 ######################################build intron splicing matrix, graph and most likely order#########################
-
-
 
 ## suppose that the read count support intron 1 spliced before intron 2 is 10
 ## but intron 2 spliced before intron 1 is 0, then add t_alpha on both side to void 0 in likelihood multiplication
@@ -99,6 +95,9 @@ t_igraph_list<-get_members(t_igraph_list,t_alpha);
 ##most likely order
 t_igraph_list<-cal_mlp(t_igraph_list,"./result/best_order.tsv",t_alpha,read_count_threshold);
 
+
+save( t_igraph_list, file="result/t_igraph_list.Rd",version = 2);
+
 ##draw intron splicing order graph
 t_igraph_list<-draw_3d(t_igraph_list, paste0(getwd(),"/result/html/"),t_alpha,TRUE);
 
@@ -108,9 +107,6 @@ for( i in 1:length(t_igraph_list) ){
   write.table(t_igraph_list[[i]]$adjacency_matrix, file=str_c("./result/adj_matrix/",names(t_igraph_list)[i],".tsv" ),
             sep="\t",col.names = FALSE,row.names = FALSE  );
 }
-
-
-save( t_igraph_list, file="result/t_igraph_list.Rd",version = 2);
 
 
 ######################################################shiny###########################################################
@@ -125,5 +121,11 @@ colnames(gene_trans_id_map)<-c("gene_id","trans_id","gene_symbol","trans_start",
 # 
 load("anno/sushi_trans_file.Rd");
 
-#source("code/shiny_web.R",echo = TRUE);
+
+load( file="result/t_igraph_list.Rd");
+
+source("code/app_r.R",echo = TRUE);
+
+
+
 

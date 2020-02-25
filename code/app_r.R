@@ -19,35 +19,18 @@ library(tidygraph);
 pdf(NULL);
 
 
-############################################################pre-process####################################################
-#setwd("/home/limeng/projects/iso");
-#library(rstudioapi);
-#this.dir<-dirname(dirname(dirname(rstudioapi::getActiveDocumentContext()$path) ) );
-#setwd(this.dir);
-
-#source("code/pre_process_species_shiny.R");
-
-############################################################essential######################################################
-#library(rstudioapi)
-#this.dir<-dirname(dirname(dirname(rstudioapi::getActiveDocumentContext()$path) ) );
-#setwd(this.dir);
-
-#options(shiny.port = 7775);
+options(shiny.port = 7775);
 #options(shiny.host = "47.105.171.211");
-#options(shiny.host="172.31.15.232");
-#options(shiny.host="172.31.15.232");
 
 
 source("code/get_members.R");
 source("code/mlp3.R");
-#source("code/mlp2.R");
 
 
 init_organism<-"human";
 
-#init_gene_symbol<-t_igraph_list_parent[["human"]]$t_igraph_list[[2]]$gene_symbol;
 init_gene_symbol<-t_igraph_list_parent[["human"]]$all_gene_symbol_graph[1]
-#save(gene_trans_id_map,t_igraph_list,file="result/t_igraph_list.Rd");
+
 if(init_organism=="human"){
   init_gene_symbol<-"HNRNPD";
 }
@@ -664,3 +647,6 @@ ui <- navbarPage("Intron splicing order",
 
 
 shinyApp(ui = ui, server = server);
+
+#open     http://127.0.0.1:7775
+
