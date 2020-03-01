@@ -85,8 +85,10 @@ get_members_matrix<-function(tt_adj_mat,t_alpha_v=0.05){
     
   #  return(members)
   #}
+  aaa<-matrix(c(1:4,2:5,1:4,3:6),nrow=4);
   
-  dis_mat<-(2-cor(t_adj_mat_p,method = "pearson",use = "pairwise.complete.obs") )
+  
+  #dis_mat<-(2-cor(t_adj_mat_p,method = "pearson",use = "pairwise.complete.obs") )
   
   dis_mat[is.na(dis_mat)]<-3;
   

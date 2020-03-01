@@ -1,11 +1,11 @@
 t_igraph_list_parent<-list()
 #load(file="result/t_igraph_list_parent.Rd");
 
-t_igraph_list_parent[["human"]]$t_igraph_list<-t_igraph_list
-t_igraph_list_parent[["human"]]$gene_trans_id_map<-gene_trans_id_map
-t_igraph_list_parent[["human"]]$for_sushi<-for_sushi
-t_igraph_list_parent[["human"]]$all_gene_symbol_graph<-as.character(sapply(t_igraph_list,"[",1) );
-t_igraph_list_parent[["human"]]$all_trans_id_graph<-as.character(sapply(t_igraph_list,"[",2) );
+t_igraph_list_parent[[label]]$t_igraph_list<-t_igraph_list
+t_igraph_list_parent[[label]]$gene_trans_id_map<-gene_trans_id_map
+t_igraph_list_parent[[label]]$for_sushi<-for_sushi
+t_igraph_list_parent[[label]]$all_gene_symbol_graph<-as.character(sapply(t_igraph_list,"[",1) );
+t_igraph_list_parent[[label]]$all_trans_id_graph<-as.character(sapply(t_igraph_list,"[",2) );
   
 library(shiny);
 library(networkD3);
@@ -27,7 +27,8 @@ source("code/get_members.R");
 source("code/mlp3.R");
 
 
-init_organism<-"human";
+init_organism<-label
+#init_organism<-"human";
 
 init_gene_symbol<-t_igraph_list_parent[["human"]]$all_gene_symbol_graph[1]
 
@@ -293,14 +294,21 @@ server <- function(input, output, session) {
     orders=best_order_ls$best_order;
     p_value<-best_order_ls$p_value;
     disorder_p_value<-best_order_ls$disorder_p_value;
+    chi_stat<-best_order_ls$chi_stat;
+    #chi_stat
     
-    paste0("Most likely order: ",paste0( orders,collapse = "-->" ),
+    a<-paste0("Most likely order: ",paste0( orders,collapse = "-->" ),
            paste0( "\nIn order spliced P-value : ",format(exp(p_value ),scientific=TRUE),
                    " ( log:",format(p_value,scientific=TRUE)," )" ),
            paste0( "\nDisorder spliced P-value : ",format(exp(disorder_p_value ),scientific=TRUE),
                    " ( log:",format(disorder_p_value,scientific=TRUE)," )" )
-           
     )
+    
+    paste0("Most likely order : ",paste0( orders,collapse = "-->" ),
+           paste0( "\nSpearman Rho : ",format( cor(orders,1:length(orders) ),scientific=TRUE) ),
+           paste0( "\nLog Relative likelihood : ",format(chi_stat ,scientific=TRUE) ) )
+    
+    
     
   });
   
