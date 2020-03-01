@@ -8,7 +8,7 @@ library(igraph);
 library(dbscan);
 library(stringr);
 library(gtools);
-
+library(ggraph)
 options(scipen=999);
 
 ####set directory ####
