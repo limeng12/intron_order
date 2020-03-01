@@ -74,35 +74,20 @@ get_members_matrix<-function(tt_adj_mat,t_alpha_v=0.05){
   
   
   #members<-dbscan(t_adj_mat_p,2)$cluster;
-  
-  #names(members)<-colnames(t_adj_mat);
-  
-  ###At least three intron in a cluster/unit,minPts = 2, min_cluster_size=minPts+1;
-  
-  ###convert correlation to distance measure
-  #if( nlevels(as.factor(t_adj_mat_p) <=2 ) ){
-  #  members<-rep(0,nrow(t_adj_mat_p));
-    
-  #  return(members)
-  #}
-  aaa<-matrix(c(1:4,2:5,1:4,3:6),nrow=4);
-  
-  
   #dis_mat<-(2-cor(t_adj_mat_p,method = "pearson",use = "pairwise.complete.obs") )
+  #dis_mat[is.na(dis_mat)]<-3;
   
-  dis_mat[is.na(dis_mat)]<-3;
+  #dist_obj<-as.dist( dis_mat );
+  #a<-optics(dist_obj,minPts = 2);
   
-  dist_obj<-as.dist( dis_mat );
-  
-  
-  #a<-optics(t_adj_mat_p,minPts = 2);
-  a<-optics(dist_obj,minPts = 2);
-  
-  # sqrt( sum( (t_adj_mat_p[,1]-t_adj_mat_p[,2])^2 ) )
+  #sqrt( sum( (t_adj_mat_p[,1]-t_adj_mat_p[,2])^2 ) )
   
   
   #spearman corrlation of 0.6 as threshold
   #eps_t<-a$eps/2;
+  
+  a<-optics(t_adj_mat_p,minPts = 2);
+  
   eps_t<-(2-0.8);
   
   if(!is.na(a$eps_cl) ){
@@ -125,7 +110,6 @@ get_members_matrix<-function(tt_adj_mat,t_alpha_v=0.05){
     }
     
   }
-  
   
   members;
   
