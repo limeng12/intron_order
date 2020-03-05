@@ -21,9 +21,6 @@ source("code/necessary_code.R");
 t_igraph_list<-get_mlo_pipe(bed_anno,files_all,most_likeli_order_output_path,
                             gene_trans_id_tbl,read_count_threshold);
 
-##
-##t_igraph_list<-add_gene_symbol_intron_pos(t_igraph_list,gene_trans_id_map,intron_pos_mat_fr);
-
 
 #save( t_igraph_list, file="result/t_igraph_list.Rd",version = 2);
 

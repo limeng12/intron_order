@@ -5,7 +5,7 @@ library(stringr)
 #t_bed_file<-"anno/hg19_gencode_from_ucsc.bed"
 
 get_intron_from_bed<-function(t_bed_file,
-                              trim_trans_id_by_dot=TRUE){
+                              m_trim_trans_id_by_dot=TRUE){
   
   
   bed_anno<-read.table(t_bed_file,header = FALSE,as.is = TRUE);
@@ -18,9 +18,9 @@ get_intron_from_bed<-function(t_bed_file,
   exon_list<-str_split(bed_anno[,"exon_len"], ",")
   exon_exon_list<-str_split(bed_anno[,"exon_start"], ",")
   
-  if(  trim_trans_id_by_dot ){
-    transcript_id_list<-str_split(bed_anno[,"trans_id"],"_|\\.") ;
-  }
+  #if(  m_trim_trans_id_by_dot ){
+  #  transcript_id_list<-str_split(bed_anno[,"trans_id"],"_|\\.") ;
+  #}
   
   #transcript_id_list<-bed_anno
   
@@ -43,10 +43,9 @@ get_intron_from_bed<-function(t_bed_file,
     
     
     transcript_id<-bed_anno[row_num,"trans_id"];
-    if(  trim_trans_id_by_dot ){
-      transcript_id<-transcript_id_list[[row_num]][1] ;
-      
-    }
+    #if(  trim_trans_id_by_dot ){
+    #  transcript_id<-transcript_id_list[[row_num]][1] ;
+    #}
     print(paste0(row_num,":",transcript_id) );
     
     transcript_start_site<-bed_anno[row_num,"start"];

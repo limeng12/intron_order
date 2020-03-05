@@ -83,14 +83,17 @@ build_iso_object2<-function(files_all,intron_anno,trans_exp_file=""){
   ##not filter by read count
   #iso<-iso[iso[,"read_count"]>=read_count_threshold,];
   
-  if(trim_trans_id_by_dot){
-    iso[,"id"]<-sapply(strsplit(iso[,"id"],"\\."),"[",1);
-  }
+  #if(trim_trans_id_by_dot){
+  #  iso[,"id"]<-sapply(strsplit(iso[,"id"],"\\."),"[",1);
+  #}
   
   if(trans_exp_file!=""){
     exp_trans<-readLines(trans_exp_file)
     
-    iso<-iso[iso$id %in% exp_trans,];
+    iso[,"trim_id"]<-sapply(strsplit(iso[,"id"],"\\."),"[",1);
+    
+    iso<-iso[iso$trim_id %in% exp_trans,];
+    
   }
   
   iso<-iso[(iso[,"nexti"] %in% intron_anno[,"gencode_intron_region"]) &
@@ -107,10 +110,12 @@ build_iso_object2<-function(files_all,intron_anno,trans_exp_file=""){
     iso_final<-iso_final[(!is.na(iso_final$nexti))&(!is.na(iso_final$first)) & 
                            (!is.na(iso_final$id)) & (!is.na(iso_final$gencode_intron_o_first)) &
                            (!is.na(iso_final$gencode_intron_o_next)),];
+    #    sum(intron_o_frame_next$trans_id==(sapply(str_split(intron_o_frame_next[,"gencode_intron_o_next"],"_in"),"[",1 ) ) )
+    #    sum(intron_o_frame_first$trans_id==(sapply(str_split(intron_o_frame_first[,"gencode_intron_o_first"],"_in"),"[",1 ) ) )
     
     ###only keep iso trans id equal to intron trans id 
-    iso_final<-iso_final[(sapply(str_split(iso_final[,"gencode_intron_o_first"],"_"),"[",1 )== iso_final[,"id"] ) & 
-                           (sapply(str_split(iso_final[,"gencode_intron_o_next"],"_"),"[",1 )== iso_final[,"id"] ) ,];
+    #iso_final<-iso_final[(sapply(str_split(iso_final[,"gencode_intron_o_first"],"_"),"[",1 )== iso_final[,"id"] ) & 
+    #                       (sapply(str_split(iso_final[,"gencode_intron_o_next"],"_"),"[",1 )== iso_final[,"id"] ) ,];
     
     
   }else{
@@ -122,7 +127,7 @@ build_iso_object2<-function(files_all,intron_anno,trans_exp_file=""){
     ##this method join the intron splicing order file and annotation by intron coordinates 
     ## the trans id got from intron splicing order is for a specific isoform, 
     ##so it needs to be replaced by the same coordinate of other isoform for further adj matrix
-    iso_final[,"id"]<-sapply(str_split(iso_final[,"gencode_intron_o_first"],"_"),"[",1 );
+    #iso_final[,"id"]<-sapply(str_split(iso_final[,"gencode_intron_o_first"],"_"),"[",1 );
     
   }
   
