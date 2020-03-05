@@ -5,7 +5,7 @@
 
 packages within R
 ```
-install.packages(c("shiny","networkD3","readr","Rcpp","DT","dplyr","igraph","dbscan","stringr","gtools","tidygraph","ggraph") )
+install.packages(c("readr","Rcpp","DT","dplyr","igraph","dbscan","stringr","gtools") )
 ```
 
 
