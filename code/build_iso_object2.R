@@ -6,32 +6,10 @@ library(igraph);
 # if transcript id contain dot
 # trim_trans_id_by_dot=TRUE
 
-build_iso_object2<-function(files_all,intron_anno,
-                           read_count_threshold =0, trans_exp_file=""){
+build_iso_object2<-function(files_all,intron_anno,trans_exp_file=""){
   
   ##################################get intron splicing order from annotation##################################################
   is_large=TRUE
-  
-  #gencode_intron<-read.table(ucsc_intron_anno,header = FALSE,sep="\t",as.is = TRUE);
-  #colnames(gencode_intron)<-c("chr","start","end","id","score","strand");
-  
-  
-  #gencode_intron[,"trans_id"]<-sapply(strsplit(gencode_intron[,4],"_") ,"[",1);
-  
-  
-  #if(  trim_trans_id_by_dot ){
-  #  gencode_intron[,"trans_id"]<-sapply(strsplit(gencode_intron[,4],"_|\\.") ,"[",1);
-  #}
-  
-  #gencode_intron[,"intron_order"]<-as.numeric(sapply(strsplit(gencode_intron[,4],"_|\\."),
-  #                                                   "[",intron_index_in_intron_file) )+1;
-  
-  
-
-  #intron_anno[,"max_intron"]<-gencode_intron_o_frame_intron_count[intron_anno[,"trans_id"]];
-  
-  #intron_anno[intron_anno$strand=="-","intron_order"]<-intron_anno[gencode_intron$strand=="-","max_intron"]-
-  #  intron_anno[intron_anno$strand=="-","intron_order"]+1;
   
   intron_anno[,"gencode_intron_region"]<-str_c(intron_anno[,"chr"],":",
                                                   intron_anno[,"start"],"-",intron_anno[,"end"]); 
@@ -103,7 +81,7 @@ build_iso_object2<-function(files_all,intron_anno,
   
   
   ##not filter by read count
-  iso<-iso[iso[,"read_count"]>=read_count_threshold,];
+  #iso<-iso[iso[,"read_count"]>=read_count_threshold,];
   
   if(trim_trans_id_by_dot){
     iso[,"id"]<-sapply(strsplit(iso[,"id"],"\\."),"[",1);
@@ -115,15 +93,6 @@ build_iso_object2<-function(files_all,intron_anno,
     iso<-iso[iso$id %in% exp_trans,];
   }
   
-  ## add gene symbol, trans start, trans end information
-  # gene_id_trans_id_map<-read.table(gene_trans_id_tbl,
-  #                                  header = FALSE,as.is = TRUE,sep="\t",quote="$",comment.char ="#")[,1:5];
-  # colnames(gene_id_trans_id_map)<-c("gene_id","trans_id","gene_symbol","trans_start","trans_end");
-  # gene_id_trans_id_map$trans_start<-as.numeric(gene_id_trans_id_map$trans_start)
-  # gene_id_trans_id_map$trans_end<-as.numeric(gene_id_trans_id_map$trans_end)
-  # iso<-left_join(iso, gene_id_trans_id_map,by=c("id"="trans_id") );
-  ##keep only annotated introns
-  #  gencode_intron
   iso<-iso[(iso[,"nexti"] %in% intron_anno[,"gencode_intron_region"]) &
              (iso[,"first"] %in% intron_anno[,"gencode_intron_region"]),];
   

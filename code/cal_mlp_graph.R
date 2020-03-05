@@ -1,7 +1,7 @@
 library(stringr);
 options(scipen=999);
 
-cal_mlp<-function(t_igraph_list,output_file,t_alpha,t_read_count_threshold=0, t_gene_trans_id_map=NA){
+cal_mlp<-function(t_igraph_list,output_file,t_alpha=0, t_gene_trans_id_map=NA){
   
   unlink(output_file);
   
@@ -14,15 +14,15 @@ cal_mlp<-function(t_igraph_list,output_file,t_alpha,t_read_count_threshold=0, t_
     
     adj_mat<-t_igraph_list[[i]]$adjacency_matrix;
     
-    for(ii in 1:nrow(adj_mat)){
-      for(jj in 1:ncol(adj_mat)){
-        if(adj_mat[ii,jj]+adj_mat[jj,ii]<t_read_count_threshold){
-          
-          adj_mat[ii,jj]<-adj_mat[jj,ii]<-0;
-        }
-        
-      }
-    }
+    # for(ii in 1:nrow(adj_mat)){
+    #   for(jj in 1:ncol(adj_mat)){
+    #     if(adj_mat[ii,jj]+adj_mat[jj,ii]<t_read_count_threshold){
+    #       
+    #       adj_mat[ii,jj]<-adj_mat[jj,ii]<-0;
+    #     }
+    #     
+    #   }
+    # }
     
     
     print(paste0(i,":",names(t_igraph_list)[i]) );

@@ -36,6 +36,7 @@ java -jar java/isoLarge.jar  anno/hg19_gencode_from_ucsc_nothick_nocds.bed <bam_
 The last parameter is the minium length of nucleotides aligned in intron
 
 Please put the output file under `data/iso_3rd/`, since the R code will treat data/iso_3rd/ as directory of intron splicing order pairs files. 
+
 ### 3. Build intron splicing order graph and matrix
 If users are not working with Rstudio, will need to edit the run.R to change the working dir to `intron_order`
 

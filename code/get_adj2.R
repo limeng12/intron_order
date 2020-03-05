@@ -13,7 +13,7 @@ source("code/utils.R")
 # t_iso_slow_sumary<-iso_summary
 # intron_pair_cov_threshold<-0.95
 
-get_adj2<-function(t_iso_final,t_iso_slow_sumary,intron_pair_cov_threshold){
+get_adj2<-function(t_iso_final,t_iso_slow_sumary,intron_pair_cov_threshold,t_read_count_threshold){
   
   
   isoform_num_produce<-sum(t_iso_slow_sumary[,"percent_intron_pair_coverage"]>intron_pair_cov_threshold);
@@ -33,17 +33,6 @@ get_adj2<-function(t_iso_final,t_iso_slow_sumary,intron_pair_cov_threshold){
     }
     
     iso_1<-unique(t_iso_final[t_iso_final[,"id"] %in% t_iso_slow_sumary[g,"trans_id"],])
-    #iso_1<-unique(t_iso_final[t_iso_final[,"id"] %in% t_iso_slow_sumary[g,"trans_id"],
-    #                          c("id","gencode_intron_o_first",
-    #                            "gencode_intron_o_next","strand","read_count","first","nexti") ]);
-    
-    #iso_1[,"gencode_intron_o_first"]<-as.character(iso_1[,"gencode_intron_o_first"]);
-    #iso_1[,"gencode_intron_o_next"]<-as.character(iso_1[,"gencode_intron_o_next"]);
-    
-    #all_ints<-unique( c(iso_1[,"gencode_intron_o_first"],iso_1[,"gencode_intron_o_next"]) );
-    
-    ##all the intron numbers
-    #intron_number_position_index<-str_count(all_ints[1],"_")+1
     
     t_gene_symbol<-"";
     t_trans_id<-iso_1[1,"id"];
@@ -76,6 +65,24 @@ get_adj2<-function(t_iso_final,t_iso_slow_sumary,intron_pair_cov_threshold){
       adjacency_matrix[ gencode_intron_o_first_number[i], gencode_intron_o_next_number[i] ]<-(iso_1[i,"read_count"]);
     }
     
+    
+    for(ii in 1:nrow(adjacency_matrix)){
+      for(jj in 1:ncol(adjacency_matrix)){
+        if(adjacency_matrix[ii,jj]+adjacency_matrix[jj,ii]<t_read_count_threshold){
+          
+          adjacency_matrix[ii,jj]<-adjacency_matrix[jj,ii]<-0;
+        }
+        
+      }
+    }
+    
+    percent_coverage_pair<-cal_intron_pair_cov(adjacency_matrix);
+    
+    
+    if(percent_coverage_pair < intron_pair_cov_threshold ){
+      next;
+    }
+    
     ##add node size and color
     node_size<-rep(10, t_total_intron_count)
     names(node_size)<-1:t_total_intron_count; 
@@ -83,18 +90,6 @@ get_adj2<-function(t_iso_final,t_iso_slow_sumary,intron_pair_cov_threshold){
     node_color=rep("green", t_total_intron_count );
     names(node_color)<-1:t_total_intron_count;
     
-    
-    percent_coverage_pair<-cal_intron_pair_cov(adjacency_matrix);
-    
-    # intron_pos_index_fr<-data.frame(
-    #   pos=c(iso_1[,"first"],iso_1[,"nexti"]),
-    #   index=c(gencode_intron_o_first_number,gencode_intron_o_next_number),
-    #   stringsAsFactors=FALSE
-    # );
-    # 
-    # 
-    # intron_pos_index_fr<-intron_pos_index_fr[!duplicated(intron_pos_index_fr$index),];
-    # intron_pos_index_fr<-intron_pos_index_fr[order(intron_pos_index_fr$index),];
     
     
     igraph_list[[str_c(t_trans_id) ]]<-
