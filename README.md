@@ -43,7 +43,7 @@ Source the below R script in Rstudio.
 ```
 intron_order/run.R
 ```
-### Suggestions and comments are welcome:  limeng@picb.ac.cn
+### Suggestions and comments are more than welcome:  limeng@picb.ac.cn or use issues
 
 
 
