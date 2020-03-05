@@ -5,15 +5,9 @@
 
 packages within R
 ```
-install.packages(c("shiny","networkD3","readr","DT","dplyr","igraph","dbscan","stringr","gtools","tidygraph","ggraph") )
+install.packages(c("shiny","networkD3","readr","Rcpp","DT","dplyr","igraph","dbscan","stringr","gtools","tidygraph","ggraph") )
 ```
 
-package within Bioconductor
-```
-install.packages("BiocManager")
-
-BiocManager::install("Sushi")
-```
 
 ### Call intron splicing order from their own BAM files, need install JAVA
 ORACLE JDK8/JRE8
@@ -69,28 +63,10 @@ awk '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$1"\t"$2"\t"$9"\t"$10"\t"$11"\t"
 `intron_order/run.R` need intron annotation to annotate the intron splicing order pairs from JAVA program
 
 
-### Prepare intron number annotation
-Convert transcript bed file into intron bed file, with an example from human:
-
-The hg19_gencode_from_ucsc.bed download from UCSC table browser directly
-```
-sh code/convert_bed_to_introns.sh hg19_gencode_from_ucsc.bed > hg19_gencode_intron_from_ucsc.bed
-```
-
 ### Prepare transcription ID and gene symbol information.
 This can be got from ENSEMBL BioMart server
 
 Column names are:
 ```
-gene_id,trans_id,gene_symbol,trans_start,trans_end,strand,chr,gene_start,gene_end
+gene_id,trans_id,gene_symbol
 ```
-
-### Prepare for Sushi transcription structure. 
-An example of human:
-
-The `gencode.v29lift37.annotation.gtf` file can be downloaded from ENSEMBL or GENCODE 
-
-```
-code/prepare_trans_stuc_plot.R
-```
-

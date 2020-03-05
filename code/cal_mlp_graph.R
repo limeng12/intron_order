@@ -1,7 +1,7 @@
 library(stringr);
 options(scipen=999);
 
-cal_mlp<-function(t_igraph_list,output_file,t_alpha,t_read_count_threshold=0){
+cal_mlp<-function(t_igraph_list,output_file,t_alpha,t_read_count_threshold=0, t_gene_trans_id_map=NA){
   
   unlink(output_file);
   
@@ -33,6 +33,9 @@ cal_mlp<-function(t_igraph_list,output_file,t_alpha,t_read_count_threshold=0){
     
     t_igraph_list[[i]]$p_value<-best_order_ls$p_value;
     
+    t_igraph_list[[i]]$chi_stat<-best_order_ls$chi_stat;
+    
+    
     t_igraph_list[[i]]$number_of_maximum_order<-best_order_ls$number_of_maximum_order;
     
     t_igraph_list[[i]]$disorder_p_value<-best_order_ls$disorder_p_value;
@@ -48,14 +51,14 @@ cal_mlp<-function(t_igraph_list,output_file,t_alpha,t_read_count_threshold=0){
   
   # output_file<-"result/best_order/best_order_simulation_pair.tsv"
   
-  cat(c("gene_symbol$transcript_id$p_value_log$best_order$number_of_orders_have_same_prob$percent_coverage_order_pair$disorder_p_value\n"),
+  cat(c("gene_symbol$transcript_id$relative_likelihood$best_order$number_of_orders_have_same_prob$percent_coverage_order_pair$disorder_p_value\n"),
       file=str_c(output_file ) );
   
   for(i in 1:length(t_igraph_list) ){
     cat(
       paste0(t_igraph_list[[i]]$gene_symbol,"$",
             t_igraph_list[[i]]$trans_id,"$",
-            (t_igraph_list[[i]]$p_value),"$", 
+            (t_igraph_list[[i]]$chi_stat),"$", 
             paste0(t_igraph_list[[i]]$best_order,collapse=","),"$",
             (t_igraph_list[[i]]$number_of_maximum_order),"$",
             (t_igraph_list[[i]]$percent_coverage_pair),"$",
@@ -87,7 +90,7 @@ cal_mlp<-function(t_igraph_list,output_file,t_alpha,t_read_count_threshold=0){
     
     spearman_p_value<-c(spearman_p_value,
                         cor.test(best_oders,1:length(best_oders) ,method="spearman")$p.value  );
-    spearman_rho<-c(spearman_rho,cor(best_oders,1:length(best_oders)) );
+    spearman_rho<-c(spearman_rho,cor(best_oders,1:length(best_oders),method="spearman") );
     
     spearman_rho_abs<-c(spearman_rho_abs,abs(cor(best_oders,1:length(best_oders),method="spearman" ) )  );
     
@@ -103,24 +106,32 @@ cal_mlp<-function(t_igraph_list,output_file,t_alpha,t_read_count_threshold=0){
                           df=length(spearman_p_value), lower.tail = FALSE,log.p = TRUE);
   
 
-  best_orde_fr[,"p_value"]<- exp(best_orde_fr$p_value_log);
   
-  p_values<-best_orde_fr[,"p_value_log"];
+  if(!is.na(t_gene_trans_id_map) ){
+    t_gene_trans_id_map_v<-t_gene_trans_id_map[,"gene_symbol"];
+    names(t_gene_trans_id_map_v)<-t_gene_trans_id_map[,"trans_id"];
+      
+    best_orde_fr[,"gene_symbol"]<-t_gene_trans_id_map_v[best_orde_fr$transcript_id];
+    
+  }
+  #best_orde_fr[,"p_value"]<- exp(best_orde_fr$p_value_log);
+  
+  #p_values<-best_orde_fr[,"p_value_log"];
   
   ###fisher's method combine P-values
-  chi_stat<- ( -2*sum( (p_values) ,na.rm = TRUE) );
+  #chi_stat<- ( -2*sum( (p_values) ,na.rm = TRUE) );
   
-  meta_p<-pchisq(chi_stat,df=length(p_values)*2,lower.tail = FALSE,log.p = TRUE);
+  #meta_p<-pchisq(chi_stat,df=length(p_values)*2,lower.tail = FALSE,log.p = TRUE);
   
   
-  cat(str_c("####p-value of in oder splicing (meta,log): ",format(meta_p),
-            "      ###p-value of in oder splicing (meta spearman,log): ",format(meta_p_spearman,scientific=TRUE),"\n"),
-      file=output_file);
+  #cat(str_c("####p-value of in oder splicing (meta,log): ",format(meta_p),
+  #          "      ###p-value of in oder splicing (meta spearman,log): ",format(meta_p_spearman,scientific=TRUE),"\n"),
+  #    file=output_file);
   
-  best_orde_fr<-best_orde_fr[order(best_orde_fr$p_value_log,decreasing=TRUE),];
+  #best_orde_fr<-best_orde_fr[order(best_orde_fr$p_value_log,decreasing=TRUE),];
   
   write.table(best_orde_fr,file=output_file, 
-              col.names = TRUE,row.names = FALSE, sep="$" ,append = TRUE,quote = FALSE);
+              col.names = TRUE,row.names = FALSE, sep="$" ,append = FALSE,quote = FALSE);
   
   return(t_igraph_list);
 }
