@@ -5,7 +5,7 @@
 
 packages within R
 ```
-install.packages(c("readr","Rcpp","DT","dplyr","igraph","dbscan","stringr","gtools") )
+install.packages(c("readr","Rcpp","dplyr","igraph","dbscan","stringr","gtools") )
 ```
 
 ### If need call intron splicing order from users' own BAM files, then need install JAVA (JRE or JDK)
@@ -37,7 +37,7 @@ The last parameter is the minium length of nucleotides aligned in intron side of
 Please put the output file under `data/`, since the R code will treat data/ as directory of intron splicing order pairs files. 
 
 ### 3. Build intron splicing order graph and matrix
-If users are not working with Rstudio, will need to edit the run.R to change the working dir to `intron_order`
+If users are not working with Rstudio, then will need to edit the run.R to change the working dir to `intron_order`
 
 Source the below R script in Rstudio.
 ```
