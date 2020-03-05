@@ -1,15 +1,14 @@
 
 ## Prerequisite
 
-### R packages, better use Rstudio as I build the web viewer using shiny
+### R and R packages
 
 packages within R
 ```
 install.packages(c("readr","Rcpp","DT","dplyr","igraph","dbscan","stringr","gtools") )
 ```
 
-
-### Call intron splicing order from their own BAM files, need install JAVA
+### If need call intron splicing order from users' own BAM files, then need install JAVA (JRE or JDK)
 ORACLE JDK8/JRE8
 
 ## Quick started
@@ -29,13 +28,13 @@ STAR, minimap2, et.al, then index the bam file
 samtools index <Bam file>
 ```
 
-### 2. Calculated intron splicing order pairs using a custome java program
+### 2. Calculated intron splicing order pairs using the custome java program
 ```
 java -jar java/isoLarge.jar  anno/hg19_gencode_from_ucsc_nothick_nocds.bed <bam_file> <output_file> <optional INT e.g. 20>
 ```
-The last parameter is the minium length of nucleotides aligned in intron
+The last parameter is the minium length of nucleotides aligned in intron side of intron-exon junction
 
-Please put the output file under `data/iso_3rd/`, since the R code will treat data/iso_3rd/ as directory of intron splicing order pairs files. 
+Please put the output file under `data/`, since the R code will treat data/ as directory of intron splicing order pairs files. 
 
 ### 3. Build intron splicing order graph and matrix
 If users are not working with Rstudio, will need to edit the run.R to change the working dir to `intron_order`
@@ -54,18 +53,16 @@ intron_order/run.R
 
 Java program used the HTSJDK to process BAM files, so need replace CDS position into TSS and TES in bed. 
 
-The hg19_gencode_from_ucsc.bed download from UCSC table browser directly
+The hg19_gencode_from_ucsc.bed can be easily downloaded using UCSC table browser directly
 
 Script with an example:
 ```
 awk '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$1"\t"$2"\t"$9"\t"$10"\t"$11"\t"$12}' hg19_gencode_from_ucsc.bed > hg19_gencode_from_ucsc_nothick_nocds.bed
 ```
 
-`intron_order/run.R` need intron annotation to annotate the intron splicing order pairs from JAVA program
-
 
 ### Prepare transcription ID and gene symbol information.
-This can be got from ENSEMBL BioMart server
+This can be easily got from ENSEMBL BioMart server
 
 Column names are:
 ```

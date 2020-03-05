@@ -3,7 +3,7 @@ this.dir<-dirname(rstudioapi::getActiveDocumentContext()$path)
 setwd(this.dir);
 
 
-files_all<-list.files("data/iso_3rd/",full.names =TRUE,pattern = "*tsv");
+files_all<-list.files("data/",full.names =TRUE,pattern = "*tsv");
 
 gene_trans_id_tbl<-"./anno/hg19_ensembl_gene_id_trans_id_map.tsv";
 
