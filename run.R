@@ -11,16 +11,13 @@ bed_anno<-"anno/hg19_gencode_from_ucsc_nothick_nocds.bed"
 
 most_likeli_order_output_path<-"./result/best_order.tsv"
 
-
 read_count_threshold<-0;
 
 source("code/necessary_code.R");
-
 #################################################################################################################
 
 t_igraph_list<-get_mlo_pipe(bed_anno,files_all,most_likeli_order_output_path,
                             gene_trans_id_tbl,read_count_threshold);
-
 
 #save( t_igraph_list, file="result/t_igraph_list.Rd",version = 2);
 

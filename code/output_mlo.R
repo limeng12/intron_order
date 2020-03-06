@@ -24,19 +24,21 @@ output_mlo<-function(t_igraph_list,t_gene_trans_id_map,t_intron_pos_mat_fr,outpu
       stringsAsFactors=FALSE
     );
     
-    t_igraph_list[[g]]$intron_pos_index_fr<-intron_pos_index_fr_one
+    t_igraph_list[[g]]$index_pos_fr<-intron_pos_index_fr_one
     
     
     
     if(t_trim_trans_id_by_dot){
       t_igraph_list[[g]]$trans_id<-sapply(strsplit(t_igraph_list[[g]]$trans_id,"\\."),"[",1);
+      names(t_igraph_list)[g]<- t_igraph_list[[g]]$trans_id
+      
     }
     
     if( !is.null(t_gene_trans_id_map) ) {
       t_igraph_list[[g]]$gene_symbol<-t_gene_trans_id_map_v[t_igraph_list[[g]]$trans_id];
     }    
     
-  
+    
   }
   
   

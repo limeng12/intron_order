@@ -44,16 +44,14 @@ cal_mlp<-function(t_igraph_list,t_alpha=0){
     best_oders<-t_igraph_list[[i]]$best_order
     #best_oders<-as.numeric( str_split(t_igraph_list[[i]]$best_order,",")[[1]] );
     
-    if(length(best_oders)<2){
+    if(length(best_oders)==1){
       t_igraph_list[[i]]$spearman_p_value<-NA
       t_igraph_list[[i]]$spearman_rho<-NA
       t_igraph_list[[i]]$spearman_rho_abs<-NA
     }else{
     
       t_igraph_list[[i]]$spearman_p_value<- cor.test(best_oders,1:length(best_oders) ,method="spearman")$p.value
-      
       t_igraph_list[[i]]$spearman_rho<-cor(best_oders,1:length(best_oders),method="spearman") 
-      
       t_igraph_list[[i]]$spearman_rho_abs<-abs(cor(best_oders,1:length(best_oders),method="spearman" ) )  
       
     }
