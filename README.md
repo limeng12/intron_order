@@ -8,18 +8,18 @@ packages within R
 install.packages(c("readr","Rcpp","dplyr","igraph","dbscan","stringr","gtools") )
 ```
 
-### If need call intron splicing order from users' own BAM files, then need install JAVA (JRE or JDK)
-ORACLE JDK8/JRE8
+### Calling intron splicing order from users' own BAM files, then need install JAVA (JRE or JDK)
+Oracle JDK8/JRE8
 
 ## Steps
 
-### 1. Align FASTQ reads with splice-wise aligner. 
+### 1. Aligning FASTQ reads with splice-wise aligner. 
 STAR, minimap2, et.al, then index the bam file
 ```
 samtools index <Bam file>
 ```
 
-### 2. Calculated intron splicing order pairs using the custome java program
+### 2. Calculating intron splicing order pairs using the custome java program
 ```
 java -jar java/isoLarge.jar  anno/hg19_gencode_from_ucsc_nothick_nocds.bed <bam_file> <output_file> <optional INT e.g. 20>
 ```
@@ -27,7 +27,7 @@ The last parameter is the minium length of nucleotides aligned in intron side of
 
 Please put the output file under `data/`, since the R code will treat data/ as directory of intron splicing order pairs files. 
 
-### 3. Build intron splicing order graph and matrix
+### 3. Calculating most likely intron splicing orders
 If users are not working with Rstudio, then will need to edit the run.R to change the working dir to `intron_order`
 
 Source the below R script in Rstudio.
