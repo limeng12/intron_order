@@ -11,15 +11,6 @@ install.packages(c("readr","Rcpp","dplyr","igraph","dbscan","stringr","gtools") 
 ### If need call intron splicing order from users' own BAM files, then need install JAVA (JRE or JDK)
 ORACLE JDK8/JRE8
 
-## Quick started
-```
-git clone https://github.com/limeng12/intron_order.git
-```
-Source the below file in Rstudio
-```
-intron_order/run.R
-```
-
 ## Steps
 
 ### 1. Align FASTQ reads with splice-wise aligner. 
