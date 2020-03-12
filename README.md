@@ -1,5 +1,7 @@
 
 ## Intron Splicing Order
+This repository also includes intermediate results and data for this work. 
+
 http://intron-splicing-order.online:3838/iso/
 
 ## Prerequisite
