@@ -12,6 +12,8 @@ get_intron_from_bed<-function(t_bed_file,
   colnames(bed_anno)<-c("chr","start","end","trans_id","score","strand","CDS_start","CDS_end",
                                    "","exon_count","exon_len","exon_start")
   
+  bed_anno<-bed_anno[!duplicated(bed_anno$trans_id),];
+  
   intron_pos_mat<-matrix(nrow = sum(bed_anno[,"exon_count"]-1),ncol = 8);
   intron_pos_index<-1
   
