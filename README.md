@@ -2,6 +2,9 @@
 ## Intron Splicing Order
 This repository also includes intermediate results and data for this work. 
 
+The result and annotations for each organism are stored seperatelly in each folder. 
+
+
 http://intron-splicing-order.online:3838/iso/
 
 ## Prerequisite
