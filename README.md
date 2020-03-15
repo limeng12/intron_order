@@ -1,4 +1,6 @@
 ## Intron Splicing Order
+http://intron-splicing-order.online:3838/iso/
+
 This repository also includes intermediate results and data for this work. 
 
 The result and annotations for each organism are stored seperatelly in each folder. 
@@ -15,8 +17,6 @@ The result and annotations for each organism are stored seperatelly in each fold
  
  `iso_pair` stores calculated intron splicing order pairs. 
  
-http://intron-splicing-order.online:3838/iso/
-
 ## Prerequisite
 
 ### R and R packages
