@@ -54,8 +54,8 @@ find_path_global<-function(t_adj_mat, t_alpha_v=0.05){
   
   #p-value of disorder
   
-  disorder_p_value<-disorder_p(t_adj_mat,best_order,t_alpha_v);
-  
+  #disorder_p_value<-disorder_p(t_adj_mat,best_order,t_alpha_v);
+  disorder_p_value<-NA
   
   #chi_stat<- -2* log(exp(avg_li-best_score) );
   
