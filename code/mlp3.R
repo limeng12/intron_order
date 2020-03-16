@@ -4,7 +4,7 @@ library(stringi)
 #library(ggplot2)
 library(Rcpp)
 
-#dynamic
+#dynamic programming
 #source("code/mlp8.R");
 sourceCpp("code/mlp9.cpp",cleanupCacheDir=FALSE);
 

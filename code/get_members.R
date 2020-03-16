@@ -1,15 +1,5 @@
-#   tt_adj_mat<-t_igraph_list[[1]]$adjacency_matrix;
-#   t_alpha_v=0.001
-#library(RColorBrewer)
+
 library(dbscan);
-#library(PReMiuM);
-#cols1<-brewer.pal(12, name = 'Set3') ;
-
-#cols2<-brewer.pal(8, name = 'Dark2') ;
-
-#cols3<-brewer.pal(12, name = 'Paired') 
-
-#cols<-c(cols1,cols2,cols3);
 
 
 get_members<-function(t_igraph_list,t_alpha){
@@ -76,15 +66,12 @@ get_members_matrix<-function(tt_adj_mat,t_alpha_v=0.05){
   #members<-dbscan(t_adj_mat_p,2)$cluster;
   #dis_mat<-(2-cor(t_adj_mat_p,method = "pearson",use = "pairwise.complete.obs") )
   #dis_mat[is.na(dis_mat)]<-3;
-  
   #dist_obj<-as.dist( dis_mat );
   #a<-optics(dist_obj,minPts = 2);
-  
   #sqrt( sum( (t_adj_mat_p[,1]-t_adj_mat_p[,2])^2 ) )
-  
-  
   #spearman corrlation of 0.6 as threshold
   #eps_t<-a$eps/2;
+  
   
   a<-optics(t_adj_mat_p,minPts = 2);
   
@@ -116,4 +103,16 @@ get_members_matrix<-function(tt_adj_mat,t_alpha_v=0.05){
 }
 
 
+
+#   tt_adj_mat<-t_igraph_list[[1]]$adjacency_matrix;
+#   t_alpha_v=0.001
+#library(RColorBrewer)
+#library(PReMiuM);
+#cols1<-brewer.pal(12, name = 'Set3') ;
+
+#cols2<-brewer.pal(8, name = 'Dark2') ;
+
+#cols3<-brewer.pal(12, name = 'Paired') 
+
+#cols<-c(cols1,cols2,cols3);
 

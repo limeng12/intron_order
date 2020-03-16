@@ -3,28 +3,12 @@ options(scipen=999);
 
 cal_mlp<-function(t_igraph_list,t_alpha=0){
   
-  #unlink(output_file);
-  
-  #cat(c("gene_symbol$transcript_id$p_value_log$best_order$bayesian_factor$relative_likelihood\n"),
-  #    file=str_c(output_file ) );
-  #cat(c("gene_symbol$transcript_id$p_value_log$best_order$number_of_orders_have_same_prob$percent_coverage_order_pair\n"),
-  #    file=str_c(output_file ) );
-  
+
   for(i in 1:length(t_igraph_list) ){
     
     adj_mat<-t_igraph_list[[i]]$adjacency_matrix;
     
-    # for(ii in 1:nrow(adj_mat)){
-    #   for(jj in 1:ncol(adj_mat)){
-    #     if(adj_mat[ii,jj]+adj_mat[jj,ii]<t_read_count_threshold){
-    #       
-    #       adj_mat[ii,jj]<-adj_mat[jj,ii]<-0;
-    #     }
-    #     
-    #   }
-    # }
-    
-    
+
     print(paste0(i,":",names(t_igraph_list)[i]) );
     
     best_order_ls<-find_path_global(adj_mat, t_alpha);
@@ -60,3 +44,20 @@ cal_mlp<-function(t_igraph_list,t_alpha=0){
   return(t_igraph_list);
 }
 
+
+
+  #unlink(output_file);
+  
+  #cat(c("gene_symbol$transcript_id$p_value_log$best_order$bayesian_factor$relative_likelihood\n"),
+  #    file=str_c(output_file ) );
+  #cat(c("gene_symbol$transcript_id$p_value_log$best_order$number_of_orders_have_same_prob$percent_coverage_order_pair\n"),
+  #    file=str_c(output_file ) );
+    # for(ii in 1:nrow(adj_mat)){
+    #   for(jj in 1:ncol(adj_mat)){
+    #     if(adj_mat[ii,jj]+adj_mat[jj,ii]<t_read_count_threshold){
+    #       
+    #       adj_mat[ii,jj]<-adj_mat[jj,ii]<-0;
+    #     }
+    #     
+    #   }
+    # }
