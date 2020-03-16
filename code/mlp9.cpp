@@ -119,7 +119,7 @@ std::vector<double> find_opti_dynam_c(double **read_count_mat,double t_alpha_v, 
   
   std::vector<int> v_set(dim);
   
-  for(int i=0;i<v_set.size();i++){
+  for(unsigned int i=0;i<v_set.size();i++){
     v_set[i]=i;
   }
   
