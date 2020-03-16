@@ -56,7 +56,7 @@ intron_order/run.R
 
 
 
-## For non-human genome
+## For other genomes that are not included here
 
 ### Prepare intron splicing order pairs calling annotation
 
