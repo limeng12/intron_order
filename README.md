@@ -23,7 +23,7 @@ The result and annotations for each organism are stored seperatelly in each fold
 
 packages within R
 ```
-install.packages(c("readr","Rcpp","dplyr","igraph","dbscan","stringr","gtools") )
+install.packages(c("readr","Rcpp","dplyr","igraph","dbscan","stringr","gtools","rstudioapi") )
 ```
 
 ### Calling intron splicing order from users' own BAM files, then need install JAVA (JRE or JDK)

@@ -1,6 +1,6 @@
 #setwd("/Users/mengli/Documents/projects/iso");
 library(igraph);
-library(networkD3);
+#library(networkD3);
 library(stringi);
 
 source("code/map.R");
