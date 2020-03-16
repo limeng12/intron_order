@@ -98,7 +98,7 @@ find_path_global<-function(t_adj_mat, t_alpha_v=0.05){
   list(p_value=p_t,
        chi_stat=(-1)*chi_stat/2,
        best_order=best_order,bs=chi_stat*(-1)/2,
-       rela_likeli_v=rela_likeli(0,avg_li,df_t,best_score), 
+       rela_likeli_v=NA, 
        number_of_maximum_order=number_of_maximum_order,
        disorder_p_value=disorder_p_value);
   
