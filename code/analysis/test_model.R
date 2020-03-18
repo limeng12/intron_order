@@ -1,5 +1,5 @@
 library(ggplot2)
-library(Cairo)
+#library(Cairo)
 #setwd("/Users/mengli/Documents/projects/iso");
 source("code/utils.R")
 source("code/mlp3.R")
@@ -141,7 +141,9 @@ test_test_large_intron_given_order_times<-function(t_sim_matrix_number){
   test_cors_mat_fr$label <- factor(test_cors_mat_fr$label,
                                         levels = c(paste0("\u2265",t_intron_pair_cov_threshod_v,"%")  ) );
   
-  CairoPDF("results/test_model_large_intron_hill_erase_percent.pdf", width=8, height=4);
+  #CairoPDF("results/test_model_large_intron_hill_erase_percent.pdf", width=8, height=4);
+  
+  pdf("results/test_model_large_intron_hill_erase_percent.pdf", width=8, height=4);
   
   p<-ggplot(test_cors_mat_fr)+geom_violin(aes(x="",y=cors, fill=label))+theme_minimal()+
     ylim(-1.1,1.1)+ylab("")+xlab("")+

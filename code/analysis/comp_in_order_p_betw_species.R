@@ -11,7 +11,7 @@ fisher_meta<-function(p_values){
   meta_p
 }
 
-source("code/multiplot.R");
+#source("code/multiplot.R");
 #source("code/analysis/combine_rho.R");
 
 human_order<-read.table("results/best_order_human.tsv",header = TRUE,as.is = TRUE,sep = "$")

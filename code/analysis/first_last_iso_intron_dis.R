@@ -5,7 +5,7 @@ library(scales)
 library(readr)
 
 #setwd("/Users/mengli/Documents/projects/iso");
-source("code/multiplot.R");
+#source("code/multiplot.R");
 
 
 get_first_intron_spliced_fre<-function(t_best_order, output_label){
