@@ -1,5 +1,5 @@
 
-files_all<-list.files("./data/fly/iso/",full.names =TRUE,pattern = "*unique_intron.tsv");
+files_all<-list.files("./data/fly/iso_pair/",full.names =TRUE,pattern = "*unique_intron.tsv");
 
 gene_trans_id_tbl<-"./data/fly/gene_id_trans_id_fly.tsv";
 

@@ -4,7 +4,7 @@ library(stringr)
 library(scales)
 library(readr)
 
-setwd("/Users/mengli/Documents/projects/iso");
+#setwd("/Users/mengli/Documents/projects/iso");
 source("code/multiplot.R");
 
 
@@ -65,25 +65,25 @@ get_first_intron_spliced_fre<-function(t_best_order, output_label){
 
 }
 
-best_order_human<-read.table("result/best_order/best_order.tsv",sep = "$",header = TRUE,as.is = TRUE,fill = TRUE );
+best_order_human<-read.table("result/best_order_human.tsv",sep = "$",header = TRUE,as.is = TRUE,fill = TRUE );
 #output_human<-"result/intron_splicing_order_first_last_dis.pdf"
 pos_relative_first_last_fr_human<-get_first_intron_spliced_fre(best_order_human,"Human")
 
 
-best_order_zebrafish<-read.table("zebrafish/result/best_order.tsv",sep = "$",header = TRUE,as.is = TRUE,fill = TRUE );
+best_order_zebrafish<-read.table("result/best_order_zebrafish.tsv",sep = "$",header = TRUE,as.is = TRUE,fill = TRUE );
 #output_human<-"result/intron_splicing_order_first_last_dis.pdf"
 pos_relative_first_last_fr_zebrafish<-get_first_intron_spliced_fre(best_order_zebrafish,"Zebrafish")
 
 
 #best_order_fly<-read.table("fly/result/best_order.tsv",sep = "\t",header = TRUE,as.is = TRUE,fill = TRUE );
-best_order_fly<-as.data.frame(read_delim("fly/result/best_order.tsv",delim="$",
+best_order_fly<-as.data.frame(read_delim("result/best_order_fly.tsv",delim="$",
                                   col_names = TRUE,comment="#",col_types="ccdciddddd") )
 
 #output_fly<-"fly/result/intron_splicing_order_first_last_dis.pdf"
 pos_relative_first_last_fr_fly<-get_first_intron_spliced_fre(best_order_fly,"Fly")
 
 
-best_order_pombe<-read.table("pombe/result/best_order.tsv",sep = "$",header = TRUE,as.is = TRUE,fill = TRUE );
+best_order_pombe<-read.table("result/best_order_pombe.tsv",sep = "$",header = TRUE,as.is = TRUE,fill = TRUE );
 #output_pombe<-"pombe/result/intron_splicing_order_first_last_dis.pdf"
 pos_relative_first_last_fr_pombe<-get_first_intron_spliced_fre(best_order_pombe,"Pombe")
 

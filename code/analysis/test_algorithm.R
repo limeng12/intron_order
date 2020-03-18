@@ -5,7 +5,7 @@ library(tictoc)
 
 #library(RAppArmor)
 
-setwd("/Users/mengli/Documents/projects/iso");
+#setwd("/Users/mengli/Documents/projects/iso");
 #setrlimit(2)
 
 #hill
@@ -13,13 +13,13 @@ setwd("/Users/mengli/Documents/projects/iso");
 #permutation
 source("code/mlp3.R")
 #dynamic
-source("code/mlp8.R")
+#source("code/mlp8.R")
 #dynamic CPP
 #sourceCpp("code/mlp9.cpp");
 
 
 # scater_compare()
-scater_compare_simulate<-function(){
+scater_compare_simulate<-function(t_simulation_time=1000){
   dyn<-c();
   
   opti<-c();
@@ -28,7 +28,7 @@ scater_compare_simulate<-function(){
   
   dyn_cpp<-c();
   
-  for( i in 1:1000){
+  for( i in 1:t_simulation_time){
     
     if(i %% 10 ==0){
       print(paste0("cur= ",i) )
@@ -49,7 +49,7 @@ scater_compare_simulate<-function(){
   
   plot(hill_v,opti,xlab="Likelihood values by hill-climbing",
        ylab="Likelihood values by permutation"
-       ,main="Simulation data (n=1,000)"
+       ,main=paste0("Simulation data (n=",t_simulation_time,")")
   );
   
   # plot(dyn,opti,xlab="Likelihood values by dynamic programming ",
@@ -59,7 +59,7 @@ scater_compare_simulate<-function(){
   
   plot(dyn_cpp,opti,xlab="Likelihood values by dynamic programming CPP",
        ylab="Likelihood values by permutation"
-       ,main="Simulation data (n=1,000)"
+       ,main=paste0("Simulation data (n=",t_simulation_time,")")
   );
   
   
@@ -236,11 +236,7 @@ compare_real_mat<-function(mat_file, t_alpha_v=0.1){
 }
 
 
-
-##generate simulated read count matrix with random read count
 ##try to prove the hill and permutation are almost same  
-scater_compare_simulate();
 
-##fill read count matrix with human real dataset, intron number <8 and >6
-scater_compare_real_mat();
+
 

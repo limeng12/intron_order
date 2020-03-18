@@ -1,3 +1,5 @@
+#setwd("/Users/mengli/Documents/projects/iso");
+
 library(stringr)
 library(readr)
 
@@ -9,26 +11,25 @@ fisher_meta<-function(p_values){
   meta_p
 }
 
-setwd("/Users/mengli/Documents/projects/iso");
 source("code/multiplot.R");
 #source("code/analysis/combine_rho.R");
 
-human_order<-read.table("result/best_order/best_order.tsv",header = TRUE,as.is = TRUE,sep = "$")
+human_order<-read.table("result/best_order_human.tsv",header = TRUE,as.is = TRUE,sep = "$")
 human_order<-human_order[is.na( human_order$number_of_orders_have_same_prob ) |
                            (human_order$number_of_orders_have_same_prob ==1),];
 
-zebrafish_order<-read.table("zebrafish/result/best_order.tsv",header = TRUE,as.is = TRUE,sep = "$")
+zebrafish_order<-read.table("result/best_order_zebrafish.tsv",header = TRUE,as.is = TRUE,sep = "$")
 zebrafish_order<-zebrafish_order[is.na( zebrafish_order$number_of_orders_have_same_prob ) |
                            (zebrafish_order$number_of_orders_have_same_prob ==1),];
 
-fly_order<-as.data.frame(read_delim("fly/result/best_order.tsv",delim="$",
+fly_order<-as.data.frame(read_delim("result/best_order_fly.tsv",delim="$",
                                   col_names = TRUE,comment="#",col_types="ccdciddddd") )
 #fly_order<-read.table("fly/result/best_order.tsv",header = TRUE,as.is = TRUE,sep = "$")
 
 fly_order<-fly_order[is.na( fly_order$number_of_orders_have_same_prob ) |
                            (fly_order$number_of_orders_have_same_prob ==1),];
 
-pombe_order<-read.table("pombe/result/best_order.tsv",header = TRUE,as.is = TRUE,sep = "$")
+pombe_order<-read.table("result/best_order_pombe.tsv",header = TRUE,as.is = TRUE,sep = "$")
 pombe_order<-pombe_order[is.na( pombe_order$number_of_orders_have_same_prob ) |
                            (pombe_order$number_of_orders_have_same_prob ==1),];
 

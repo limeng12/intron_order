@@ -1,8 +1,9 @@
+#setwd("/Users/mengli/Documents/projects/iso");
+
 #setwd("D:\\SIBS\\Wangzefeng Lab\\project\\")
 library(stringr)
 library(ggplot2)
 library(readr)
-setwd("/Users/mengli/Documents/projects/iso");
 
 source("code/analysis/get_score_seq.R")
 
@@ -12,40 +13,9 @@ source("code/analysis/get_score_seq.R")
 
 #Schizosaccharomyces_pombe.ASM294v2.43.chr_nothick.bed
 
-pombe_ucsc_annotation_bed_path<-"pombe/Schizosaccharomyces_pombe.ASM294v2.43.chr_nothick.bed";
-pombe_best_order_path<-"pombe/result/best_order.tsv";
-pombe_output_path<-"pombe/result/intron_len_dis_cor.pdf";
-pombe_fasta_path<-FaFile("pombe/fasta/Schizosaccharomyces_pombe.ASM294v2.fa");
-pombe_anno_save_path<-"pombe/result/pombe_intron_len_score.Rd";
-
-
-fly_ucsc_annotation_bed_path<-"fly/dm6_ensembl_no_thick.bed";
-fly_best_order_path<-"fly/result/best_order.tsv";
-fly_output_path<-"fly/result/intron_len_dis_cor.pdf";
-fly_fasta_path<-FaFile("/Volumes/mengli/anno/anno_dm6/Drosophila_melanogaster.BDGP6.22.dna.toplevel.fa");
-fly_anno_save_path<-"fly/result/fly_intron_len_score.Rd";
-
-
-zebrafish_ucsc_annotation_bed_path<-"zebrafish/GRCz11_ensembl_nothick.bed";
-zebrafish_best_order_path<-"./zebrafish/result/best_order.tsv";
-zebrafish_output_path<-"./zebrafish/intron_len_dis_cor.pdf";
-zebrafish_fasta_path<-FaFile("zebrafish/fasta/Danio_rerio.GRCz11.dna.primary_assembly.fa");
-zebrafish_anno_save_path<-"./zebrafish/zebrafish_intron_len_score.Rd";
-
-
-human_ucsc_annotation_bed_path<-"anno/hg19_gencode_from_ucsc_nothick_nocds.bed";
-human_best_order_path<-"./result/best_order/best_order.tsv";
-human_output_path<-"./result/intron_len_dis_cor.pdf";
-human_fasta_path<-FaFile("/Volumes/mengli/anno/human_gencode/GRCh37.primary_assembly.genome.fa");
-human_anno_save_path<-"./result/human_intron_len_score.Rd";
-
-cal_intron_metric_cor<-function(ucsc_annotation_bed_path,best_order_path,
-                                output_path,fa_path,anno_save_load,rebuild_anno=FALSE,output_label=""){
+cal_intron_metric_cor<-function(anno_save_load,best_order_path,output_label="",rebuild_anno=FALSE,ucsc_annotation_bed_path="",fa_path=""){
   
-  ucsc_annotation_bed<-read.table(ucsc_annotation_bed_path,sep = "\t",header = FALSE,as.is = TRUE)
-  colnames(ucsc_annotation_bed)<-c("chr","start","end","trans_id","score","strand","CDS_start","CDS_end",
-                                   "","exon_count","exon_len","exon_start")
-  
+
   #best_order<-read.table(best_order_path,sep = "\t",header = TRUE,as.is = TRUE,fill=TRUE);
   
   best_order<-as.data.frame(read_delim(best_order_path,delim="$",
@@ -56,7 +26,10 @@ cal_intron_metric_cor<-function(ucsc_annotation_bed_path,best_order_path,
   
   
   if(rebuild_anno){
-  
+    ucsc_annotation_bed<-read.table(ucsc_annotation_bed_path,sep = "\t",header = FALSE,as.is = TRUE)
+    colnames(ucsc_annotation_bed)<-c("chr","start","end","trans_id","score","strand","CDS_start","CDS_end",
+                                     "","exon_count","exon_len","exon_start")
+    
     #ucsc_annotation_bed<-as.matrix(ucsc_annotation_bed)
     # intron_len<-matrix(nrow = nrow(ucsc_annotation_bed))
     # intron_5tss_len<-matrix(nrow = nrow(ucsc_annotation_bed))
@@ -362,39 +335,8 @@ cal_intron_metric_cor<-function(ucsc_annotation_bed_path,best_order_path,
                              correlation_intron_3tss_score=correlation_intron_3tss_score
                              );
   
-  #colnames(best_order_cor)<-c("gene_id","trans_id","p_value_log","best_order","bayesian_factor","relative_likelihood",
-  #                            "spearman_rho","spearman_rho_abs","spearman_p_value","p_value",
-  #                            "correlation_intron_length","correlation_intron_5tss","correlation_intron_3tss",
-  #                            "correlation_intron_5tss_score","correlation_intron_3tss_score");
 
-  #best_order_cor_ordered<-best_order_cor[order(best_order_cor[,"p_value_log"]),];
-  
-  
-  ##if only two elements, then cor = -1 or +1
-  #intron number >2
-  #best_order_cor<-best_order_cor[str_count(best_order_cor[,"best_order"],",")>1,]
-  
-  source("code/multiplot.R");
-  
-  #pdf(output_path, width = 7,height = 6);
-  
-  #sort(correlation_intron_5tss_length[correlation_intron_5tss_length>0])
-  # p1<-ggplot()+geom_histogram(aes(as.numeric(best_order_cor[,"correlation_intron_length"])) )+
-  #   xlab("Correlation of intron length with splicing order");
-  # 
-  # p2<-ggplot()+geom_histogram(aes(as.numeric(best_order_cor[,"correlation_intron_5tss"])  ) )+
-  #   xlab("Correlation of introns' 5 prime positions to TSS with splicing order");
-#  p3<-ggplot()+geom_histogram(aes(as.numeric(best_order_cor[,"correlation_intron_3tss"])  ) )+
-#    xlab("Correlation of introns' 3 prime positions to TSS with splicing order");
-  
-  # p4<-ggplot()+geom_histogram(aes(as.numeric(best_order_cor[,"correlation_intron_5tss_score"])  ) )+
-  #   xlab("Correlation of introns' 5 prime MaxEntScore with splicing order");
-  # p5<-ggplot()+geom_histogram(aes(as.numeric(best_order_cor[,"correlation_intron_3tss_score"])  ) )+
-  #   xlab("Correlation of introns' 3 prime MaxEntScore with splicing order");
-  # 
-  
-  #multiplot(p1,p2,p4,p5,cols=1);
-  
+
 
   p_all_mat_label<-c(rep("Intron length",nrow(best_order_cor)),
                          rep("Intron distance to TSS",nrow(best_order_cor)),
@@ -411,82 +353,48 @@ cal_intron_metric_cor<-function(ucsc_annotation_bed_path,best_order_path,
                         species=rep(output_label,length(p_all_mat_v) ),
                         stringsAsFactors = FALSE)
   
-  #p_all<-ggplot(p_all_mat)+geom_violin(aes(x=p_all_mat_label,y=p_all_mat_v))+theme_minimal()+xlab("")+ylab("")
-  
-  #print(p_all);
-  
-  #p_all<-ggplot(p_all_mat)+geom_boxplot(aes(x=p_all_mat_label,y=p_all_mat_v))+theme_minimal()+xlab("")+ylab("")
-  
-  #print(p_all);
-  #dev.off();
+
 
 }
 
+#p_all<-ggplot(p_all_mat)+geom_violin(aes(x=p_all_mat_label,y=p_all_mat_v))+theme_minimal()+xlab("")+ylab("")
 
-p_all_mat_pombe<-cal_intron_metric_cor(pombe_ucsc_annotation_bed_path, pombe_best_order_path, pombe_output_path,
-                      pombe_fasta_path,pombe_anno_save_path,FALSE,"pombe");
-
-p_all_mat_fly<-cal_intron_metric_cor(fly_ucsc_annotation_bed_path, fly_best_order_path, fly_output_path,
-                      fly_fasta_path,fly_anno_save_path,FALSE,"fly");
-
-p_all_mat_zebrafish<-cal_intron_metric_cor(zebrafish_ucsc_annotation_bed_path, zebrafish_best_order_path,
-                                           zebrafish_output_path,
-                                       zebrafish_fasta_path,zebrafish_anno_save_path,FALSE,"zebrafish");
-
-p_all_mat_human<-cal_intron_metric_cor(human_ucsc_annotation_bed_path, human_best_order_path, human_output_path,
-                      human_fasta_path,human_anno_save_path,FALSE,"human");
-
-
-
-p_all_mat_all<-rbind(p_all_mat_pombe,p_all_mat_fly,p_all_mat_zebrafish,p_all_mat_human);
-
-number_trans_human<-nrow(p_all_mat_human)/4
-number_trans_zebrafish<-nrow(p_all_mat_zebrafish)/4
-number_trans_fly<-nrow(p_all_mat_fly)/4
-number_trans_pombe<-nrow(p_all_mat_pombe)/4
-
-
-p_all_mat_all$species<-str_replace_all(p_all_mat_all$species,"human",paste0("Human (n=",number_trans_human,")" )  )
-p_all_mat_all$species<-str_replace_all(p_all_mat_all$species,"zebrafish",paste0("Zebrafish (n=",number_trans_zebrafish,")" )  )
-p_all_mat_all$species<-str_replace_all(p_all_mat_all$species,"fly",paste0("Fly (n=",number_trans_fly,")" )  )
-p_all_mat_all$species<-str_replace_all(p_all_mat_all$species,"pombe",paste0("Pombe (n=",number_trans_pombe,")" )  )
-
-p_all_mat_all$species<-factor(p_all_mat_all$species,
-                            levels =c(paste0("Pombe (n=",number_trans_pombe,")" ),
-                                      paste0("Fly (n=",number_trans_fly,")" ) ,
-                                      paste0("Zebrafish (n=",number_trans_zebrafish,")" ) ,
-                                      paste0("Human (n=",number_trans_human,")" )) )
-
-p_all_mat_all$label<-factor(p_all_mat_all$label,levels=c("Intron length",
-                                                         "Intron distance to TSS",
-                                                         "Intron 5'ss socre",
-                                                         "Intron 3'ss socre"));
-
-
-p_all<-ggplot(p_all_mat_all)+geom_violin(aes(x="",y=value,fill=paste0(label,species)) )+theme_minimal()+xlab("")+ylab("")+
-facet_grid(cols=vars(label),rows=vars(species), scales = "free", space = "free")+
-  theme(legend.position="none")+ylim(-1.1,1.1)+
-  scale_fill_manual(values=c( rep(hue_pal()(4)[1],4 ),
-                              rep(hue_pal()(4)[2], 4 ),
-                              rep(hue_pal()(4)[3], 4 ),rep(hue_pal()(4)[4], 4 )) );
-
-
-
-p_all_s<-ggplot(p_all_mat_all,aes(x="",y=value,fill=paste0(label,species)) )+
-  geom_violin( )+theme_minimal()+xlab("")+ylab("")+ geom_point(stat="summary", fun.y="mean") + 
-  facet_grid(rows=vars(label),cols=vars(species), scales = "free", space = "free")+
-  theme(legend.position="none")+ylim(-1.1,1.1)+
-  scale_fill_manual(values=c( rep(hue_pal()(4)[1:4],1 ),
-                              rep(hue_pal()(4)[1:4], 1 ),
-                              rep(hue_pal()(4)[1:4], 1 ),rep(hue_pal()(4)[1:4], 1 )) );
-
-
-pdf("result/cor_order_intron_length_5ss_score.pdf",width=8,height=12)
-
-print(p_all_s);
 #print(p_all);
 
-dev.off();
+#p_all<-ggplot(p_all_mat)+geom_boxplot(aes(x=p_all_mat_label,y=p_all_mat_v))+theme_minimal()+xlab("")+ylab("")
+
+#print(p_all);
+#dev.off();
+
+#source("code/multiplot.R");
+#colnames(best_order_cor)<-c("gene_id","trans_id","p_value_log","best_order","bayesian_factor","relative_likelihood",
+#                            "spearman_rho","spearman_rho_abs","spearman_p_value","p_value",
+#                            "correlation_intron_length","correlation_intron_5tss","correlation_intron_3tss",
+#                            "correlation_intron_5tss_score","correlation_intron_3tss_score");
+
+#best_order_cor_ordered<-best_order_cor[order(best_order_cor[,"p_value_log"]),];
 
 
+##if only two elements, then cor = -1 or +1
+#intron number >2
+#best_order_cor<-best_order_cor[str_count(best_order_cor[,"best_order"],",")>1,]
+
+#pdf(output_path, width = 7,height = 6);
+
+#sort(correlation_intron_5tss_length[correlation_intron_5tss_length>0])
+# p1<-ggplot()+geom_histogram(aes(as.numeric(best_order_cor[,"correlation_intron_length"])) )+
+#   xlab("Correlation of intron length with splicing order");
+# 
+# p2<-ggplot()+geom_histogram(aes(as.numeric(best_order_cor[,"correlation_intron_5tss"])  ) )+
+#   xlab("Correlation of introns' 5 prime positions to TSS with splicing order");
+#  p3<-ggplot()+geom_histogram(aes(as.numeric(best_order_cor[,"correlation_intron_3tss"])  ) )+
+#    xlab("Correlation of introns' 3 prime positions to TSS with splicing order");
+
+# p4<-ggplot()+geom_histogram(aes(as.numeric(best_order_cor[,"correlation_intron_5tss_score"])  ) )+
+#   xlab("Correlation of introns' 5 prime MaxEntScore with splicing order");
+# p5<-ggplot()+geom_histogram(aes(as.numeric(best_order_cor[,"correlation_intron_3tss_score"])  ) )+
+#   xlab("Correlation of introns' 3 prime MaxEntScore with splicing order");
+# 
+
+#multiplot(p1,p2,p4,p5,cols=1);
 

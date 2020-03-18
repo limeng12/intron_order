@@ -23,5 +23,13 @@ t_igraph_list<-get_mlo_pipe(t_bed_anno=bed_anno,
                             t_read_cov_threshold=0.95,
                             t_trim_trans_id_by_dot=TRUE);
 
+
+for( i in 1:length(t_igraph_list) ){
+  
+  write.table(t_igraph_list[[i]]$adjacency_matrix, file=str_c("./result/adj_matrix/",names(t_igraph_list)[i],".tsv" ),
+              sep="\t",col.names = FALSE,row.names = FALSE  );
+}
+
+
 #save( t_igraph_list, file="result/t_igraph_list.Rd",version = 2);
 

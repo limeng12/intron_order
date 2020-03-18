@@ -1,6 +1,6 @@
 
 
-files_all<-list.files("./data/pombe/iso/",full.names =TRUE,pattern = "*unique_intron.tsv");
+files_all<-list.files("./data/pombe/iso_pair/",full.names =TRUE,pattern = "*unique_intron.tsv");
 
 gene_trans_id_tbl<-"./data/pombe/pombe_ensembl_gene_id_trans_id_map.tsv";
 

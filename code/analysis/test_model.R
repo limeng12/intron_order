@@ -1,6 +1,6 @@
 library(ggplot2)
 library(Cairo)
-setwd("/Users/mengli/Documents/projects/iso");
+#setwd("/Users/mengli/Documents/projects/iso");
 source("code/utils.R")
 source("code/mlp3.R")
 
@@ -49,7 +49,7 @@ generate_read_count_mat<-function(t_total_number_intron=50,random_noise=TRUE){
 }
 
 
-test_test_large_intron_given_order_times<-function(){
+test_test_large_intron_given_order_times<-function(t_sim_matrix_number){
   
   ##average number of intron in each transcript
   total_number_intron<-7;
@@ -59,7 +59,7 @@ test_test_large_intron_given_order_times<-function(){
   
   
   #sim_times<-50;
-  sim_matrix_number<-1000;
+  sim_matrix_number<-t_sim_matrix_number;
   t_alpha_v<-0.1;
   
   
@@ -160,5 +160,5 @@ test_test_large_intron_given_order_times<-function(){
 
 ##generate read count matrix with given orders (add some poisson noise)
 ##try to prove as long as the matrix is correct, the model result will be correct, even for large number of introns
-test_test_large_intron_given_order_times();
+#test_test_large_intron_given_order_times(1000);
 

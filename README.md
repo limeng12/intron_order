@@ -50,7 +50,7 @@ If users are not working with Rstudio, then will need to edit the run.R to chang
 
 Source the below R script in Rstudio.
 ```
-intron_order/run.R
+intron_order/code/run_human.R
 ```
 ### Suggestions and comments are more than welcome:  limeng@picb.ac.cn or use issues
 

@@ -3,7 +3,7 @@ library(Rsamtools)
 library(GenomicRanges)
 library(BSgenome);
 
-setwd("/Users/mengli/Documents/projects/iso");
+#setwd("/Users/mengli/Documents/projects/iso");
 
 
 get_score_5ss_file<-function(seq){
