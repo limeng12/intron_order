@@ -6,7 +6,7 @@ gene_trans_id_tbl<-"./data/yeast/gene_id_trans_id_yeast.txt";
 
 bed_anno<-"./data/yeast/sacCer3_no_thick.bed"
 
-most_likeli_order_output_path<-"./result/best_order_yeast.tsv"
+most_likeli_order_output_path<-"./results/best_order_yeast.tsv"
 
 
 read_count_threshold<-0

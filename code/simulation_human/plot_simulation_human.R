@@ -4,7 +4,7 @@ library(stringr);
 library(latex2exp)
 setwd("/Users/mengli/Documents/projects/iso/");
 source("./code/multiplot.R");
-load("result/simulation_orders_human.Rd");
+load("results/simulation_orders_human.Rd");
 
 trans_order_long<-trans_order;
 
@@ -29,7 +29,7 @@ total_transcript_long<-length(trans_order_long);
 
 ############################################################################################################
 
-simulation_re_pair<-read.table("result/best_order/best_order_simulation_pair.tsv",sep="$",
+simulation_re_pair<-read.table("results/best_order/best_order_simulation_pair.tsv",sep="$",
                                as.is = TRUE,header = TRUE,fill=TRUE);
 
 #aa<-setdiff( names(trans_order_long), simulation_re_pair$transcript_id )
@@ -67,7 +67,7 @@ trans_order_long_char<-sapply(trans_order_long,paste0,collapse=",");
 
 ############################################################################################################
 
-simulation_re_long<-read.table("result/best_order/best_order_simulation_long.tsv",sep="$",
+simulation_re_long<-read.table("results/best_order/best_order_simulation_long.tsv",sep="$",
                                as.is = TRUE,header = TRUE,fill=TRUE);
 
 spearma_r_vec_long<-c()
@@ -101,7 +101,7 @@ trans_order_long_char<-sapply(trans_order_long,paste0,collapse=",");
 
 ############################################################################################################
 
-simulation_re_super_long<-read.table("result/best_order/best_order_simulation_super_long.tsv",sep="$",
+simulation_re_super_long<-read.table("results/best_order/best_order_simulation_super_long.tsv",sep="$",
                                      as.is = TRUE,header = TRUE,fill=TRUE);
 
 
@@ -157,8 +157,7 @@ spearma_r_vec_long_mat<-data.frame(spearma_r_vec_long_all=spearma_r_vec_long_all
 
 ############################################################################################################
 #setwd("/Users/mengli/Documents/projects/iso/pombe");
-pdf("result/human_simulation_reads_cor.pdf",width = 5.5,height=4);
-
+pdf("results/human_simulation_reads_cor.pdf",width = 5.5,height=4);
 
 p1<-ggplot(spearma_r_vec_long_mat)+
   #ggtitle( TeX(paste("N=", total_transcript_long, " (intron number $\\geq$ 3) multi-intron containing transcripts simulation") ) )+
@@ -171,7 +170,6 @@ p1<-ggplot(spearma_r_vec_long_mat)+
         axis.text.y = element_text(size=13) )
   
   
-
 print(p1);
 dev.off();
 

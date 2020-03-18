@@ -5,7 +5,7 @@ gene_trans_id_tbl<-"./data/fly/gene_id_trans_id_fly.tsv";
 
 bed_anno<-"./data/fly/dm6_ensembl_no_thick.bed"
 
-most_likeli_order_output_path<-"./result/best_order_fly.tsv"
+most_likeli_order_output_path<-"./results/best_order_fly.tsv"
 
 
 read_count_threshold<-0

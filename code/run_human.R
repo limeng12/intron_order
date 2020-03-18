@@ -6,7 +6,7 @@ gene_trans_id_tbl<-"./data/hg19_ensembl_gene_id_trans_id_map.tsv";
 
 bed_anno<-"./data/hg19_gencode_from_ucsc_nothick_nocds.bed"
 
-most_likeli_order_output_path<-"./result/best_order_human.tsv"
+most_likeli_order_output_path<-"./results/best_order_human.tsv"
 
 read_count_threshold<-0;
 
@@ -23,10 +23,11 @@ t_igraph_list<-get_mlo_pipe(t_bed_anno=bed_anno,
                             t_read_cov_threshold=0.95,
                             t_trim_trans_id_by_dot=TRUE);
 
+dir.create("./results/adj_matrix",showWarnings = FALSE)
 
 for( i in 1:length(t_igraph_list) ){
   
-  write.table(t_igraph_list[[i]]$adjacency_matrix, file=str_c("./result/adj_matrix/",names(t_igraph_list)[i],".tsv" ),
+  write.table(t_igraph_list[[i]]$adjacency_matrix, file=str_c("./results/adj_matrix/",names(t_igraph_list)[i],".tsv" ),
               sep="\t",col.names = FALSE,row.names = FALSE  );
 }
 

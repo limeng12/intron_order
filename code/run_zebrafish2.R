@@ -6,7 +6,7 @@ gene_trans_id_tbl<-"./data/zebrafish/gene_id_trans_id_zebra.tsv";
 
 bed_anno<-"./data/zebrafish/GRCz11_ensembl_nothick.bed"
 
-most_likeli_order_output_path<-"./result/best_order_zebrafish.tsv"
+most_likeli_order_output_path<-"./results/best_order_zebrafish.tsv"
 
 
 read_count_threshold<-5;

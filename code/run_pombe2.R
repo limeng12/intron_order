@@ -6,7 +6,7 @@ gene_trans_id_tbl<-"./data/pombe/pombe_ensembl_gene_id_trans_id_map.tsv";
 
 bed_anno<-"./data/pombe/Schizosaccharomyces_pombe.ASM294v2.43.chr_nothick.bed"
 
-most_likeli_order_output_path<-"./result/best_order_pombe.tsv"
+most_likeli_order_output_path<-"./results/best_order_pombe.tsv"
 
 
 read_count_threshold<-0

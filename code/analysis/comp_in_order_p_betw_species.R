@@ -14,22 +14,22 @@ fisher_meta<-function(p_values){
 source("code/multiplot.R");
 #source("code/analysis/combine_rho.R");
 
-human_order<-read.table("result/best_order_human.tsv",header = TRUE,as.is = TRUE,sep = "$")
+human_order<-read.table("results/best_order_human.tsv",header = TRUE,as.is = TRUE,sep = "$")
 human_order<-human_order[is.na( human_order$number_of_orders_have_same_prob ) |
                            (human_order$number_of_orders_have_same_prob ==1),];
 
-zebrafish_order<-read.table("result/best_order_zebrafish.tsv",header = TRUE,as.is = TRUE,sep = "$")
+zebrafish_order<-read.table("results/best_order_zebrafish.tsv",header = TRUE,as.is = TRUE,sep = "$")
 zebrafish_order<-zebrafish_order[is.na( zebrafish_order$number_of_orders_have_same_prob ) |
                            (zebrafish_order$number_of_orders_have_same_prob ==1),];
 
-fly_order<-as.data.frame(read_delim("result/best_order_fly.tsv",delim="$",
+fly_order<-as.data.frame(read_delim("results/best_order_fly.tsv",delim="$",
                                   col_names = TRUE,comment="#",col_types="ccdciddddd") )
 #fly_order<-read.table("fly/result/best_order.tsv",header = TRUE,as.is = TRUE,sep = "$")
 
 fly_order<-fly_order[is.na( fly_order$number_of_orders_have_same_prob ) |
                            (fly_order$number_of_orders_have_same_prob ==1),];
 
-pombe_order<-read.table("result/best_order_pombe.tsv",header = TRUE,as.is = TRUE,sep = "$")
+pombe_order<-read.table("results/best_order_pombe.tsv",header = TRUE,as.is = TRUE,sep = "$")
 pombe_order<-pombe_order[is.na( pombe_order$number_of_orders_have_same_prob ) |
                            (pombe_order$number_of_orders_have_same_prob ==1),];
 
@@ -116,7 +116,7 @@ p3<-ggplot(order_p_value_spearman_rho_fr,aes(x=sample_size, y=value,fill=label))
 
 library(gridExtra)
 
-pdf("result/comp_in_order_species.pdf",width = 8, height=6)
+pdf("results/comp_in_order_species.pdf",width = 8, height=6)
 grid.arrange(p1,p3,nrow=2,heights=c(1,1) );
 
 

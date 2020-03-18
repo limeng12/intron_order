@@ -1,14 +1,14 @@
 setwd("/Users/mengli/Documents/projects/iso/");
 
 
-files_all<-list.files("result/iso_simulation_super_long/",
+files_all<-list.files("results/iso_simulation_super_long/",
                       full.names=TRUE,pattern = "*unique_intron.tsv");
 
 gene_trans_id_tbl<-"anno/hg19_ensembl_gene_id_trans_id_map.tsv";
 
 bed_anno<-"anno/hg19_gencode_from_ucsc.bed";
 
-most_likeli_order_output_path<-"./result/best_order/best_order_simulation_super_long.tsv"
+most_likeli_order_output_path<-"./results/best_order/best_order_simulation_super_long.tsv"
 
 
 read_count_threshold<-0

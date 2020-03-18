@@ -45,7 +45,7 @@ scater_compare_simulate<-function(t_simulation_time=1000){
     dyn_cpp<-c(dyn_cpp,a[4]);
   }
   
-  pdf("result/compare_hill_permut_simulation.pdf", width=8, height=8);
+  pdf("results/compare_hill_permut_simulation.pdf", width=8, height=8);
   
   plot(hill_v,opti,xlab="Likelihood values by hill-climbing",
        ylab="Likelihood values by permutation"
@@ -131,7 +131,7 @@ scater_compare_real_mat<-function(){
   
   hill_v<-c();
   
-  mat_files<-list.files("./result/adj_matrix/");
+  mat_files<-list.files("./results/adj_matrix/");
   
   n<-1;
   
@@ -139,7 +139,7 @@ scater_compare_real_mat<-function(){
     
     mat_file<-mat_files[i];
     
-    mat<-read.table(paste0("./result/adj_matrix/", mat_file),header = FALSE );
+    mat<-read.table(paste0("./results/adj_matrix/", mat_file),header = FALSE );
     if(nrow(mat)<6 || nrow(mat)>11 ){
       next;
     }
@@ -165,7 +165,7 @@ scater_compare_real_mat<-function(){
   }
   
   
-  pdf("result/compare_hill_permut_human_mat.pdf", width=8, height=8);
+  pdf("results/compare_hill_permut_human_mat.pdf", width=8, height=8);
   
   #par(mfrow=c(1,2))
   
@@ -198,7 +198,7 @@ compare_real_mat<-function(mat_file, t_alpha_v=0.1){
   
   #t<-7
   
-  mat<-read.table(paste0("./result/adj_matrix/", mat_file),header = FALSE );
+  mat<-read.table(paste0("./results/adj_matrix/", mat_file),header = FALSE );
   
   m_output_id<-str_split(mat_file,"\\.")[[1]][1]
             

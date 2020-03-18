@@ -1,23 +1,23 @@
 source("code/analysis/cor_cal.R",echo=TRUE);
 
-pombe_best_order_path<-"./result/best_order_pombe.tsv";
+pombe_best_order_path<-"./results/best_order_pombe.tsv";
 pombe_anno_save_path<-"data/pombe/pombe_intron_len_score.Rd";
 #pombe_ucsc_annotation_bed_path<-"data/pombe/Schizosaccharomyces_pombe.ASM294v2.43.chr_nothick.bed";
 #pombe_fasta_path<-FaFile("data/pombe/Schizosaccharomyces_pombe.ASM294v2.fa");
 
-fly_best_order_path<-"./result/best_order_fly.tsv";
+fly_best_order_path<-"./results/best_order_fly.tsv";
 fly_anno_save_path<-"data/fly/fly_intron_len_score.Rd";
 #fly_ucsc_annotation_bed_path<-"fly/dm6_ensembl_no_thick.bed";
 #fly_fasta_path<-FaFile("/Volumes/mengli/anno/anno_dm6/Drosophila_melanogaster.BDGP6.22.dna.toplevel.fa");
 
 
-zebrafish_best_order_path<-"./result/best_order_zebrafish.tsv";
+zebrafish_best_order_path<-"./results/best_order_zebrafish.tsv";
 zebrafish_anno_save_path<-"./data/zebrafish/zebrafish_intron_len_score.Rd";
 #zebrafish_ucsc_annotation_bed_path<-"zebrafish/GRCz11_ensembl_nothick.bed";
 #zebrafish_fasta_path<-FaFile("zebrafish/fasta/Danio_rerio.GRCz11.dna.primary_assembly.fa");
 
 
-human_best_order_path<-"./result/best_order_human.tsv";
+human_best_order_path<-"./results/best_order_human.tsv";
 human_anno_save_path<-"./data/human_intron_len_score.Rd";
 #human_ucsc_annotation_bed_path<-"anno/hg19_gencode_from_ucsc_nothick_nocds.bed";
 #human_fasta_path<-FaFile("/Volumes/mengli/anno/human_gencode/GRCh37.primary_assembly.genome.fa");
@@ -80,7 +80,7 @@ p_all_s<-ggplot(p_all_mat_all,aes(x="",y=value,fill=paste0(label,species)) )+
                               rep(hue_pal()(4)[1:4], 1 ),rep(hue_pal()(4)[1:4], 1 )) );
 
 
-pdf("result/cor_order_intron_length_5ss_score.pdf",width=8,height=12)
+pdf("results/cor_order_intron_length_5ss_score.pdf",width=8,height=12)
 
 print(p_all_s);
 #print(p_all);

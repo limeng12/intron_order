@@ -23,7 +23,7 @@ t_max_frag_len<-30000;
 
 
 
-chr21_fa<-FaFile("./result/chr21/chr21.fa");
+chr21_fa<-FaFile("./results/chr21/chr21.fa");
 
 get_seq_region<-function(x){
   if(x==""){
@@ -179,13 +179,13 @@ print(paste0("Total number of multi-introns containing transcripts: ", length(tr
 
 #### simulated reads
 #t<-1;
-unlink(paste0("result/human_read_given_order_simulation_long.fasta.gz") );
+unlink(paste0("results/human_read_given_order_simulation_long.fasta.gz") );
 
-unlink(paste0("result/human_read_given_order_simulation_long_super_long.fasta.gz") );
+unlink(paste0("results/human_read_given_order_simulation_long_super_long.fasta.gz") );
 
-unlink(paste0("result/human_read_given_order_simulation_pair_1.fasta.gz") );
+unlink(paste0("results/human_read_given_order_simulation_pair_1.fasta.gz") );
 
-unlink(paste0("result/human_read_given_order_simulation_pair_2.fasta.gz") );
+unlink(paste0("results/human_read_given_order_simulation_pair_2.fasta.gz") );
 
 #  trans_one<-trans_exons_introns[[2]]
 
@@ -242,7 +242,7 @@ for(trans_one_index in 1:length(trans_exons_introns) ){
     single_reads<-get_reads(fragments,t_read_len,paired = FALSE);
     
     writeXStringSet(single_reads, 
-                    filepath = paste0("result/human_read_given_order_simulation_long_super_long.fasta.gz"), 
+                    filepath = paste0("results/human_read_given_order_simulation_long_super_long.fasta.gz"), 
                     format = "fasta",append=TRUE,compress = TRUE);
     
     ##########################################################LONG READ###############################################
@@ -260,7 +260,7 @@ for(trans_one_index in 1:length(trans_exons_introns) ){
     t_read_len<-max((rnorm(1,800,250) ), 200);
     single_reads<-get_reads(fragments,t_read_len,paired = FALSE);
     
-    writeXStringSet(single_reads, filepath = paste0("result/human_read_given_order_simulation_long.fasta.gz"), 
+    writeXStringSet(single_reads, filepath = paste0("results/human_read_given_order_simulation_long.fasta.gz"), 
                     format = "fasta",append=TRUE,compress = TRUE);
     
     
@@ -282,10 +282,10 @@ for(trans_one_index in 1:length(trans_exons_introns) ){
     right_reads<-pair_reads[1:length(pair_reads) %% 2==0];
     
     
-    writeXStringSet(left_reads, filepath = paste0("result/human_read_given_order_simulation_pair_1.fasta.gz"), 
+    writeXStringSet(left_reads, filepath = paste0("results/human_read_given_order_simulation_pair_1.fasta.gz"), 
                     format = "fasta",append=TRUE,compress = TRUE);
     
-    writeXStringSet(right_reads, filepath = paste0("result/human_read_given_order_simulation_pair_2.fasta.gz"), 
+    writeXStringSet(right_reads, filepath = paste0("results/human_read_given_order_simulation_pair_2.fasta.gz"), 
                     format = "fasta",append=TRUE,compress = TRUE);
   
     
@@ -294,7 +294,7 @@ for(trans_one_index in 1:length(trans_exons_introns) ){
 }
 
 
-save(trans_order,file="result/simulation_orders_human.Rd");
+save(trans_order,file="results/simulation_orders_human.Rd");
 
 ## one nanopore ~1-3 million reads
 ## 5,557,643 fragments are simulated

@@ -8,7 +8,7 @@ gene_trans_id_tbl<-"anno/hg19_ensembl_gene_id_trans_id_map.tsv";
 
 bed_anno<-"anno/hg19_gencode_from_ucsc.bed";
 
-most_likeli_order_output_path<-"./result/best_order/best_order_simulation_pair.tsv"
+most_likeli_order_output_path<-"./results/best_order/best_order_simulation_pair.tsv"
 
 
 read_count_threshold<-0
