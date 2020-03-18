@@ -5,7 +5,6 @@ library(stringr)
 library(ggplot2)
 library(readr)
 
-source("code/analysis/get_score_seq.R")
 
 #species<-"pombe"
 #species<-"fly"

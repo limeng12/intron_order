@@ -2,7 +2,7 @@ library(rstudioapi)
 this.dir<-dirname(rstudioapi::getActiveDocumentContext()$path) 
 setwd(dirname(this.dir ) )
 
-
+#setwd("../)
 ###################################Real data analysis; Get most likeli order (Additional file 2 XLSX)###############################################
 
 source("code/run_yeast.R")

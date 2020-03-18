@@ -1,4 +1,5 @@
 source("code/analysis/cor_cal.R",echo=TRUE);
+#source("code/analysis/get_score_seq.R")
 
 pombe_best_order_path<-"./results/best_order_pombe.tsv";
 pombe_anno_save_path<-"data/pombe/pombe_intron_len_score.Rd";
