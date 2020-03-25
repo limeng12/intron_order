@@ -6,8 +6,8 @@ This repository is compatibility with Code Ocean to facilitate reproducibility
 
 To reproduce the result in Code Ocean:
 1. Git clone this repository into a `capsule` in Code Ocean
-2. Add the prerequisite R packages below in the environment setting in capsule.
-3. Set `code/run_all.R` as file to run
+2. Set R as running environment and add the prerequisite R packages below in the environment setting in the capsule.
+3. Set `code/run_all.R` as `file to run`
 4. Click the `Reproducible Run`
 
 ### Intermediate results
