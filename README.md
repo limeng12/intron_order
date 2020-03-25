@@ -10,6 +10,8 @@ To reproduce the result in Code Ocean:
 3. Set `code/run_all.R` as `file to run`
 4. Click the `Reproducible Run`
 
+I have tested it in my own capsule. 
+
 ### Intermediate results
 This repository also includes intermediate results and data for this work. 
 
