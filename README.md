@@ -21,7 +21,7 @@ The results for each organism are stored seperatelly in each folder `human`,`zeb
  
  `best_order.tsv` stores the calculated most likely order for this organism. 
 
- The anootation for each organism are stored seperatelly under folder `data/`, `human`,`zebrafish`,`fly`,`pombe`,`yeast`. 
+ The anootation for each organism are stored seperatelly under folder `data/`: `zebrafish`,`fly`,`pombe`,`yeast`. 
  
  
  `*no_thick.bed` stores transcripts annotations.
