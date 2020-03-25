@@ -1,6 +1,15 @@
 ## Intron Splicing Order
 http://intron-splicing-order.online:3838/iso/
 
+###Code Ocean
+This repository is compability with Code Ocean to facilite reproducibility
+To reproduce the result in this result in Code Ocean
+1. Git clone this repository intro a capsule in Code Ocean
+2. Add the packages below in the environment setting in Code Ocean.
+3. Set `code/run_all.R` as file to run
+4. Click the `Reproducible Run`
+
+
 This repository also includes intermediate results and data for this work. 
 
 The result and annotations for each organism are stored seperatelly in each folder. 
