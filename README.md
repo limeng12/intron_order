@@ -13,7 +13,7 @@ To reproduce the result in Code Ocean:
 ### Intermediate results
 This repository also includes intermediate results and data for this work. 
 
-The result and annotations for each organism are stored seperatelly in each folder. 
+The result and annotations for each organism are stored seperatelly in each folder `human`,`zebrafish`,`fly`,`pombe`,`yeast`. 
 
  `all_MLO_Plot.pdf` stores intron splicing read count graph order by most likely order.
  
