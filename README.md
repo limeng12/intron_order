@@ -13,18 +13,21 @@ To reproduce the result in Code Ocean:
 ### Intermediate results
 This repository also includes intermediate results and data for this work. 
 
-The result and annotations for each organism are stored seperatelly in each folder `human`,`zebrafish`,`fly`,`pombe`,`yeast`. 
+The results for each organism are stored seperatelly in each folder `human`,`zebrafish`,`fly`,`pombe`,`yeast`. 
 
  `all_MLO_Plot.pdf` stores intron splicing read count graph order by most likely order.
  
  `all_MLO_Table.pdf` stores intron splicing frequency matrix order by most likely order.
  
- `*no_thick.bed` stores transcripts annotations.
- 
- `gene_id_tran*` stores gene_id gene symbol and transcript id.
- 
  `best_order.tsv` stores the calculated most likely order for this organism. 
+
+ The anootation for each organism are stored seperatelly under folder `data/`, `human`,`zebrafish`,`fly`,`pombe`,`yeast`. 
  
+ 
+ `*no_thick.bed` stores transcripts annotations.
+
+ `gene_id_tran*` stores gene_id, gene symbol and transcript id.
+
  `iso_pair` stores calculated intron splicing order pairs. 
  
 ## Prerequisite
