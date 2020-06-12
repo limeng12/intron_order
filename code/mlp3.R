@@ -7,6 +7,7 @@ library(Rcpp)
 #dynamic programming
 #source("code/mlp8.R");
 sourceCpp("code/mlp9.cpp",cleanupCacheDir=FALSE);
+sourceCpp("code/mlp10.cpp",cleanupCacheDir=FALSE);
 
 #hill climbing
 #source("code/mlp2.R")
@@ -28,9 +29,10 @@ find_path_global<-function(t_adj_mat, t_alpha_v=0.05){
     #path_list<-find_best_order_full2(t_adj_mat,colnames(t_adj_mat),t_alpha_v);
     path_list<-find_best_order_full2_c(t_adj_mat,t_alpha_v);
     
-  }else if(nrow(t_adj_mat) < 20){
+  }else if(nrow(t_adj_mat) < 25){
     #path_list<-find_opti_dynam(t_adj_mat,t_alpha_v);
-    path_list<-find_opti_dynam_r_cpp(t_adj_mat,t_alpha_v);
+    #path_list<-find_opti_dynam_r_cpp(t_adj_mat,t_alpha_v);
+    path_list<-find_opti_dynam_r_cpp_bit(t_adj_mat,t_alpha_v);
     
   }else{
     #path_list<-del_find_path_iter(t_adj_mat, t_alpha_v);
