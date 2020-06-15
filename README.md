@@ -91,7 +91,6 @@ Column names are:
 gene_id,trans_id,gene_symbol
 ```
 
-### Suggestions and comments are more than welcome:  limeng@picb.ac.cn or use issues
-If you are using /used this method in your research, you can optinally inform the author. The author will be happy to know this. 
+### Suggestions and comments are welcome:  limeng49631@aliyun.com or use issues
 
 
