@@ -3,14 +3,21 @@ options(scipen=999);
 
 cal_mlp<-function(t_igraph_list,t_alpha=0){
   
-
+  cat("\n");
+  print("Calculating most likely order: ")
+  pb = txtProgressBar(min = 1, max = length(t_igraph_list), initial = 0, width=100, style=3) 
+  #setTxtProgressBar(pb,i);
+  
   for(i in 1:length(t_igraph_list) ){
+    
+    setTxtProgressBar(pb,i);
+    
     
     adj_mat<-t_igraph_list[[i]]$adjacency_matrix;
     
-
-    print(paste0(i,":",names(t_igraph_list)[i]) );
-    
+    if(i%%100==1){
+      #print(paste0(i,":",names(t_igraph_list)[i]) );
+    }
     best_order_ls<-find_path_global(adj_mat, t_alpha);
     
     t_igraph_list[[i]]$best_order<-best_order_ls$best_order;
@@ -19,7 +26,8 @@ cal_mlp<-function(t_igraph_list,t_alpha=0){
     
     t_igraph_list[[i]]$chi_stat<-best_order_ls$chi_stat;
     
-    
+    t_igraph_list[[i]]$permut_p<-best_order_ls$permut_p;
+      
     t_igraph_list[[i]]$number_of_maximum_order<-best_order_ls$number_of_maximum_order;
     
     t_igraph_list[[i]]$disorder_p_value<-best_order_ls$disorder_p_value;
@@ -34,7 +42,14 @@ cal_mlp<-function(t_igraph_list,t_alpha=0){
       t_igraph_list[[i]]$spearman_rho_abs<-NA
     }else{
     
-      t_igraph_list[[i]]$spearman_p_value<- cor.test(best_oders,1:length(best_oders) ,method="spearman")$p.value
+      #t_igraph_list[[i]]$spearman_p_value<- cor.test(best_oders,1:length(best_oders) ,method="spearman")$p.value
+      
+      t_igraph_list[[i]]$spearman_p_value_greater<- cor.test(best_oders,1:length(best_oders),
+                                                     alternative="greater",method="spearman")$p.value
+      
+      t_igraph_list[[i]]$spearman_p_value_less<- cor.test(best_oders,1:length(best_oders),
+                                                     alternative="less",method="spearman")$p.value
+      
       t_igraph_list[[i]]$spearman_rho<-cor(best_oders,1:length(best_oders),method="spearman") 
       t_igraph_list[[i]]$spearman_rho_abs<-abs(cor(best_oders,1:length(best_oders),method="spearman" ) )  
       

@@ -2,13 +2,12 @@ library(dplyr);
 library(stringr);
 library(igraph);
 
-
 # if transcript id contain dot
 # trim_trans_id_by_dot=TRUE
 
 build_iso_object2<-function(files_all,intron_anno,trans_exp_file=""){
   
-  ##################################get intron splicing order from annotation##################################################
+  ##################################get intron splicing order from annotation#####################
   is_large=TRUE
   
   intron_anno[,"gencode_intron_region"]<-str_c(intron_anno[,"chr"],":",
@@ -45,40 +44,54 @@ build_iso_object2<-function(files_all,intron_anno,trans_exp_file=""){
     
   )
   
-  #######################################merge iso(intron splicing order) files##############################################
+  #######################################merge iso(intron splicing order) files##########################
   ## read iso files into iso_raw
+  print(paste0("load file: ",files_all[1]));
+  
   iso_raw<-read.table(paste0(files_all[1]),header = FALSE, sep = "\t", as.is = TRUE)
   
-  if(ncol(iso_raw)==6){
+  if(ncol(iso_raw)==7){
+    iso_raw<-iso_raw[,c(1:4,6,7)];
+  }else{
     iso_raw<-iso_raw[,c(1:4,6)];
+    iso_raw<-cbind(iso_raw,rep(0,nrow(iso_raw)) );
+    
   }
   
-  colnames(iso_raw)<-c("id","nexti","first","strand","read_count");
+  #the 7th column is read that support both the two introns detected are junctions, i.e. already spliced. 
+  colnames(iso_raw)<-c("id","nexti","first","strand","read_count","read_count_jc");
   
   for(i in files_all[-1]){
     
-    print(i);
+    print(paste0("load file: ",i));
     #if(file.size( paste0("data/iso/",i) )==0 || (!file.exists( paste0("data/iso/",i) ) ) ){
     if(file.size( paste0(i) )==0 || (!file.exists( paste0(i) ) ) ){
       next;
     }
     
     iso_tmp<-read.table(paste0(i),header = FALSE, sep = "\t", as.is = TRUE)
-    if(ncol(iso_tmp)==6){
+    if(ncol(iso_tmp)==7){
+      iso_tmp<-iso_tmp[,c(1:4,6,7)];
+    }else{
       iso_tmp<-iso_tmp[,c(1:4,6)];
+      iso_tmp<-cbind(iso_tmp,rep(0,nrow(iso_tmp)) );
+      
     }
-    colnames(iso_tmp)<-c("id","nexti","first","strand","read_count");
+    
+    
+    colnames(iso_tmp)<-c("id","nexti","first","strand","read_count","read_count_jc");
     
     iso_raw<-rbind(iso_raw,iso_tmp);
     
   }
   
-  colnames(iso_raw)<-c("id","nexti","first","strand","read_count");
+  colnames(iso_raw)<-c("id","nexti","first","strand","read_count","read_count_jc");
   
   
   ## group togeter iso files 
-  iso<-as.data.frame(iso_raw %>% dplyr::group_by(id,nexti,first,strand) %>% dplyr::summarise(read_count=sum(read_count) ) );
-  
+  iso<-as.data.frame(iso_raw %>% dplyr::group_by(id,nexti,first,strand) %>% 
+                       dplyr::summarise(read_count=sum(read_count),
+                                        read_count_jc=sum(read_count_jc)) );
   
   ##not filter by read count
   #iso<-iso[iso[,"read_count"]>=read_count_threshold,];
@@ -92,7 +105,13 @@ build_iso_object2<-function(files_all,intron_anno,trans_exp_file=""){
     
     iso[,"trim_id"]<-sapply(strsplit(iso[,"id"],"\\."),"[",1);
     
-    iso<-iso[iso$trim_id %in% exp_trans,];
+    #iso<-iso[iso$trim_id %in% exp_trans,];
+    iso<-iso[iso$id %in% exp_trans,];
+    
+    #print(iso[1,"id"])
+    #print(exp_trans[1])
+    
+    print(paste0("number of expressed transcripts: ", length(unique(iso$id))  ) );
     
   }
   

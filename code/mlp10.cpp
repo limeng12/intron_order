@@ -14,6 +14,62 @@
 //using namespace Rcpp;
 //using namespace std;
 
+
+
+double calp2_c(float **t_read_count_mat_li,std::vector<int>& order_arr){
+  
+  double p_sum=0;
+  int dim=order_arr.size();
+  
+  for(int i=0;i<dim-1;i++){
+    for(int j=i+1;j<dim;j++){
+      p_sum=p_sum+t_read_count_mat_li[order_arr[i]][order_arr[j]];
+    }
+    
+  }
+  
+  return p_sum;
+}
+
+
+double calp2_p_v(float **t_read_count_mat_li, int t_dim, int sim_times=1000000){
+  
+  std::vector<int> init_order_p_v(t_dim);
+  
+  for(int i = 0; i <t_dim; i++)
+    init_order_p_v[i] = i;
+  
+  
+  
+  //double p_v=0;
+  
+  std::sort( init_order_p_v.begin(),init_order_p_v.end() ); 
+  
+  float in_order_li=calp2_c(t_read_count_mat_li,init_order_p_v);
+  
+  
+  double number_of_less_than_in_order=0;
+  
+  for(int i=0;i< sim_times;i++){
+    std::random_shuffle ( init_order_p_v.begin(), init_order_p_v.end() );
+    
+    double tmp_li=calp2_c(t_read_count_mat_li,init_order_p_v);
+    
+    if(tmp_li<=in_order_li ){
+      number_of_less_than_in_order++;
+    }
+    
+  }
+  //number_of_less_than_in_order
+  
+  double permut_p=number_of_less_than_in_order/sim_times;
+  
+  return permut_p;
+}
+
+
+
+
 struct CompareSet_bit{
   
   bool operator()(const std::bitset<32>& lhs, const std::bitset<32>& rhs) const
@@ -31,21 +87,20 @@ struct CompareSet_bit{
   }
 };
 
-inline double get_log_sum_c_bit(int t_sink, std::bitset<32> t_parents,double **mat_li, int t_dim ){
+inline float get_log_sum_c_bit(int t_sink, std::bitset<32> t_parents,float **mat_li, int t_dim ){
   
-  double t_log_sum=0;
+  float t_log_sum=0;
   
   //std::set<int>::iterator it;
   //for (it = t_parents.begin(); it != t_parents.end(); ++it){
   //for (std::size_t i = 0; i < t_parents.size(); ++i) {
   for (std::size_t i = 0; i < t_dim; ++i) {
   
-    if( t_parents.test(i)  ){
-      if( (mat_li[i][t_sink]!=0)) {
+    if( t_parents.test(i)  && (mat_li[i][t_sink]!=0)) {
         //t_log_sum = t_log_sum + std::log(mat_li[i][t_sink]);
         t_log_sum = t_log_sum + (mat_li[i][t_sink]);
         
-      }
+      
     }
   }
   
@@ -95,37 +150,9 @@ std::set<std::bitset<32>,CompareSet_bit > get_all_combinations(int n) {
 }
 
 
-std::vector<double> find_opti_dynam_c_bit(double **read_count_mat,double t_alpha_v, int dim){
+std::vector<double> find_opti_dynam_c_bit(float **read_count_mat_li,double t_alpha_v, int dim){
   
   //double read_count_mat_li[dim][dim];
-  
-  double **read_count_mat_li=new double *[dim];
-  
-  for(int i = 0; i <dim; i++)
-    read_count_mat_li[i] = new double[dim];
-  
-  
-  for(int i=0;i<dim;i++){
-    for(int j=0;j<dim;j++){
-      if(i==j){
-        read_count_mat_li[i][j]=read_count_mat_li[j][i]=0;
-        continue;
-      }
-      
-      if( (read_count_mat[i][j]+read_count_mat[j][i])==0){
-        read_count_mat_li[i][j]=read_count_mat_li[j][i]=std::log(0.5);
-        continue;
-      }
-      
-      if(i>j){
-        double p= (read_count_mat[i][j]+t_alpha_v)/(read_count_mat[i][j]+read_count_mat[j][i]+2*t_alpha_v);
-        
-        read_count_mat_li[i][j]=std::log(p);
-        read_count_mat_li[j][i]=std::log(1-p);
-      }
-      
-    }
-  }
   
   //for(int i=0;i<dim;i++){
   //for(int j=0;j<dim;j++) {
@@ -142,7 +169,7 @@ std::vector<double> find_opti_dynam_c_bit(double **read_count_mat,double t_alpha
   
   std::set<std::bitset<32>,CompareSet_bit > v_set_power = get_all_combinations(dim);
   
-  std::unordered_map<std::bitset<32>, double> scores;
+  std::unordered_map<std::bitset<32>, float> scores;
   std::unordered_map<std::bitset<32>, int> sinks;
   
   scores.reserve(pow(2,dim));
@@ -185,10 +212,10 @@ std::vector<double> find_opti_dynam_c_bit(double **read_count_mat,double t_alpha
         //std::for_each(upvars.begin(), upvars.end(), [&](const int &piece){
         //  upvars_str =upvars_str+":"+ std::to_string(piece); });
         
-        double skore=scores[one_sub];
+        float skore=scores[one_sub];
         skore=skore+get_log_sum_c_bit(i, one_sub, read_count_mat_li,dim);
         
-        if( (sinks[w_set]== -1) || (skore > scores[w_set])){
+        if( (skore > scores[w_set]) || (sinks[w_set]== -1)  ){
           scores[w_set]=skore;
           sinks[w_set]=i;
           
@@ -257,7 +284,7 @@ std::vector<double> find_opti_dynam_c_bit(double **read_count_mat,double t_alpha
   
   std::bitset<32> full_set(pow(2,(dim))-1 );
   
-  double best_socre=scores[full_set];
+  float best_socre=scores[full_set];
   
   
   for(int i=dim-1; i>=0;i-- ){
@@ -300,17 +327,52 @@ Rcpp::List find_opti_dynam_r_cpp_bit(Rcpp::NumericMatrix t_read_count_mat,double
     }
   }
   
-  std::vector<double> ord=find_opti_dynam_c_bit(m_read_count_mat,t_alpha_v,dim);
+  
+  float **m_read_count_mat_li=new float *[dim];
+  for(int i = 0; i <dim; i++)
+    m_read_count_mat_li[i] = new float[dim];
+  
+  
+  for(int i=0;i<dim;i++){
+    for(int j=0;j<dim;j++){
+      if(i==j){
+        m_read_count_mat_li[i][j]=m_read_count_mat_li[j][i]=0;
+        continue;
+      }
+      
+      if( (m_read_count_mat[i][j]+m_read_count_mat[j][i])==0){
+        m_read_count_mat_li[i][j]=m_read_count_mat_li[j][i]=std::log(0.5);
+        continue;
+      }
+      
+      if(i>j){
+        float p= (m_read_count_mat[i][j]+t_alpha_v)/(m_read_count_mat[i][j]+m_read_count_mat[j][i]+2*t_alpha_v);
+        
+        m_read_count_mat_li[i][j]=std::log(p);
+        m_read_count_mat_li[j][i]=std::log(1-p);
+      }
+      
+    }
+  }
+  
+  
+  std::vector<double> ord=find_opti_dynam_c_bit(m_read_count_mat_li,t_alpha_v,dim);
   Rcpp::NumericVector out(dim );
   
   for(int i=0;i<dim;i++){
     out[i]=ord[i]+1;
   }
+  
+  
   //std::cout<<dim;
+  //double permut_p=calp2_p_v(m_read_count_mat_li,dim);
+  double permut_p=0;
   
   Rcpp::List L = Rcpp::List::create(Rcpp::Named("best_order") = out ,
                                     Rcpp::_["best_score"] = ord[dim],
-                                    Rcpp::_["number_of_maximum_order"]=NA_INTEGER);
+                                    Rcpp::_["number_of_maximum_order"]=NA_INTEGER,
+                                    Rcpp::_["permut_p"]=permut_p
+                                    );
   
   return L;
 }

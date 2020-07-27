@@ -1,5 +1,3 @@
-
-
 # t_iso_final<-iso_final
 # t_anno_intron<-intron_pos_mat_fr
 
@@ -30,11 +28,9 @@ get_iso_summary<-function(t_iso_final,t_anno_intron){
   iso_slow_sumary[,"percent_intron_pair_coverage"]<-(iso_slow_sumary$intron_pair_count)/
     (iso_slow_sumary[,"intron_count"]*(iso_slow_sumary[,"intron_count"]-1)/2);
   
-  
   iso_slow_sumary<-iso_slow_sumary[order( iso_slow_sumary[,"percent_intron_pair_coverage"],decreasing = TRUE),];
   
-  print(paste0("Number of multi introns transcripts  detected =", nrow(iso_slow_sumary) ) );
-  
+  print(paste0("Number of multi introns transcripts detected =", nrow(iso_slow_sumary) ) );
   
   iso_slow_sumary
   

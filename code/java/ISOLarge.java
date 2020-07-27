@@ -1,12 +1,16 @@
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
 import htsjdk.samtools.CigarOperator;
+import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMSequenceDictionary;
+import htsjdk.samtools.SAMSequenceRecord;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.util.CloseableIterator;
@@ -16,29 +20,48 @@ import htsjdk.tribble.bed.BEDFeature;
 import htsjdk.tribble.bed.FullBEDFeature.Exon;
 import htsjdk.tribble.readers.LineIterator;
 
+import org.apache.commons.cli.*;
+
 public class ISOLarge {
 
-	public static void main(String[] args) throws Exception {
-		HashMap<String, Integer> e_map;
+	public static HashSet<String> preprocess_name(SamReader t_bam_reader) throws IOException {
+
 		
+		SAMFileHeader t_bam_header = t_bam_reader.getFileHeader();
 		
-		/*
+		SAMSequenceDictionary bam_header_dic = t_bam_header.getSequenceDictionary();
+		
+		HashSet<String> seq_names=new HashSet<String>();
+		
+		for( SAMSequenceRecord r:bam_header_dic.getSequences() ) {
+			
+			String seq_name_one=r.getSequenceName();
+			seq_names.add(seq_name_one);
+			
+			bam_header_dic.addSequenceAlias(seq_name_one, "chr"+seq_name_one);
+			//System.out.println(seq_name_one);
+			
+		}
+		
+				
+		return seq_names;
+		
+	}
+	
+	public static void test_iso() throws Exception {
+
+		
 		//String in_bed_path = "/Users/mengli/Documents/projects/iso/anno/hg19_gencode_from_ucsc_nothick_nocds_test.bed";
 		String in_bed_path = "/Users/mengli/Documents/projects/iso/anno/hg19_gencode_from_ucsc_nothick_nocds.bed";
 
-		String bam_path = "/Users/mengli/Downloads/ENCFF804MYH.bam";
+		String bam_path = "/Volumes/mengli/eric_nu/bam_3rd/SRR8932661_1.bam";
 		
-		String out_path = "/Users/mengli/Documents/projects/iso/result/iso_test.tsv";
+		String out_path = "/Users/mengli/Downloads/aaaa.txt";
 
 		int intron_flank_threshold=20;
 		
-		boolean unique_int=true;
-		
-		boolean consider_large_int=true;
-		
-		boolean consider_exon_in_intron=true;
-		*/
-		
+		iso(in_bed_path,out_path,bam_path,intron_flank_threshold);
+
 		
 		
 		/*
@@ -57,124 +80,226 @@ public class ISOLarge {
 		e_map=Reada5a3.read5a3("/Users/mengli/Documents/projects/iso/zebrafish/a3a5_bias_all_zebra.tsv");
 		 */
 		
-		String in_bed_path=args[0];
+	}
+	
+	public static void main(String[] args) throws Exception {	
+		//test_iso();
 		
-		String bam_path=args[1];
+        Options options = new Options();
+
+        Option input = new Option("i", "bed", true, "annotation bed file path");
+        input.setRequired(true);
+        options.addOption(input);
+
+        Option ibam = new Option("ibam", "inputbam", true, "input sorted and indexed bam file");
+        ibam.setRequired(true);
+        options.addOption(ibam);
+        
+        Option output = new Option("o", "output", true, "output file");
+        output.setRequired(true);
+        options.addOption(output);
+        
+        Option thredshold = new Option("t", "threshold", true, "the minimum number of base pair mapped into introns");
+        thredshold.setRequired(false);
+        options.addOption(thredshold);
+    
+       
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd = null;
+
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("intron splicing order pair calculation", options);
+
+            System.exit(1);
+        }
+
+        String inputFilePath = cmd.getOptionValue("bed");
+        
+        String outputFilePath = cmd.getOptionValue("output");
+        
+        String input_bam_file = cmd.getOptionValue("inputbam");
+        
+
+        File input_file = new File(inputFilePath);
+        if(!input_file.exists()) {
+        	System.err.print("input bed annotation not exists");
+            System.exit(1);
+        }
+        
+       
+        File output_file = new File(outputFilePath).getAbsoluteFile();
+        if((!output_file.exists()) && (!output_file.getParentFile().exists())) {
+        	System.err.print("output path not exitst");
+            System.exit(1);
+        }
+        
+        File bam_file = new File(input_bam_file);
+        if(!bam_file.exists()) {
+        	System.err.print("bam file not exitst");
+            System.exit(1);
+        }
+        
+        File bam_index_file = new File(input_bam_file+".bai");
+        if(!bam_index_file.exists()) {
+        	System.err.print("bam index file not exitst");
+            System.exit(1);
+        }
+        
+        
+        int thredshold_v = 90;
+
+        if( cmd.hasOption("threshold")  ) {
+            String thredshold_str = cmd.getOptionValue("threshold");
+
+        	if(Reada5a3.isInteger(thredshold_str) ){
+        	
+        		thredshold_v=Integer.parseInt( thredshold_str );
+            
+	        }else {
+	        	System.err.print("threshold must be integer");
+	
+	            System.exit(1);
+	
+	        }
+        }
+
+        
+        
+		iso(inputFilePath,outputFilePath,input_bam_file,thredshold_v);
 		
-		String out_path = args[2];
+	}
+	
+	public static void iso(String in_bed_path,String out_path,String bam_path, int t_threshold  ) throws Exception {
 		
-		/*
-		HashSet<String> target_trans=new HashSet<String>();
+		String bam_file_name=new File(bam_path).getName();
 		
-		if(args.length>3) {
-			
-			target_trans=Reada5a3.readTranscripts(args[3]);
+		System.out.println("bam file name: "+ bam_file_name);
 		
-		}
-		*/
+		System.out.println("annotation bed file name: "+ new File(in_bed_path).getAbsolutePath() );
 		
-		int intron_flank_threshold=20;
+		System.out.println("output path name: "+ new File(out_path).getAbsolutePath());
+
+		System.out.println("read map into intron threshold: "+ t_threshold+"bp");
+
 		
-		if(args.length>3) {
-			intron_flank_threshold=Integer.parseInt(args[3]);
-		}
+		int total_intron_splicing_order_pair=0;
 		
+		HashMap<String, Integer> e_map;
+		
+		//String in_bed_path=t_input_path;
+		//String bam_path=args_l[1];
+		//String out_path = args_l[2];
+		
+		//if(args_l.length>3) {
+			//intron_flank_threshold=Integer.parseInt(args_l[3]);
+		//intron_flank_threshold=t_threshold;
+		//}
+		
+		
+		String out_path_read_names=bam_path+"_read_name.txt";
+		
+		//the minimum length of reads in anchor region
+	
+		
+		//only consider unique intron
 		boolean unique_int=false;
-		if(args.length>4) {
-			unique_int=Boolean.parseBoolean(args[4]);
-		}
 		
+		//if consider all introns in transcript or just neighbor introns.
 		boolean consider_large_int=true;
-		if(args.length>5) {
-			consider_large_int=Boolean.parseBoolean(args[5]);
-		}
-		
 		
 		//one isoform's exon maybe in another isoform's intron region
 		boolean consider_exon_in_intron=true;
-		
-		if(args.length>6) {
-			e_map=Reada5a3.read5a3(args[6]);
-		}else {
-			//e_map=Reada5a3.read5a3();
-			e_map=Reada5a3.read5a3_no5a3();
-		}	
 
-		if(args.length>7) {
-			consider_exon_in_intron=false;
-		}
-		
-		System.out.println("consider whole transcript: "+consider_large_int);
-		
-		System.out.println("unique intron: "+unique_int);
+		//correct a5a3 bias, not used
+		e_map=Reada5a3.read5a3_no5a3();
 		
 		
-		
+		//System.out.println("consider whole transcript: "+consider_large_int);
+		//System.out.println("unique intron: "+unique_int);
+				
 		File bed_file = new File(in_bed_path);
-		
-		// BufferedReader br = new BufferedReader(new FileReader(file));
-		
+				
 		AbstractFeatureReader<BEDFeature, LineIterator> br = AbstractFeatureReader.getFeatureReader(bed_file.getPath(),
 				new BEDCodec(), false);
 		
 		
 		File bamFile = new File(bam_path);
-		//File baiFileIndex = new File(bamFile.getPath() + ".bai");
-		
-		// private BAMFileReader bamFileReaderBAI = new BAMFileReader(bamFile,
-		// baiFileIndex, true, false,
-		// ValidationStringency.DEFAULT_STRINGENCY,
-		// DefaultSAMRecordFactory.getInstance());
 
 		SamReader reader = SamReaderFactory.makeDefault().open(bamFile);
-		// File output_one= new File("output");
+        
+		HashSet<String> contig_names=preprocess_name(reader);
+
+		
 		BufferedWriter output_one = new BufferedWriter(new FileWriter(out_path));
 
+		BufferedWriter output_one_read_name = new BufferedWriter(new FileWriter(out_path_read_names) );
+
+		
 		HashMap<String, Integer> interest_iso = new HashMap<String, Integer>();
 
-		//String st;
+		HashMap<String, Integer> read_support_jc_pair = new HashMap<String, Integer>();
+
+		
 		Iterable<BEDFeature> iter = br.iterator();
 
 		HashSet<String> two_int_coord = new HashSet<String>();
 		
 		HashSet<String> all_introns=Reada5a3.get_all_intron(bed_file);
 		
-		
+        int bed_line_numb=0;
 		for (BEDFeature feat : iter) {
-
+			bed_line_numb++;
+		}
+		
+        System.out.print(bed_line_numb);
+        
+		
+        //String anim= "|/-\\";
+        float x=0;
+        
+		iter = br.iterator();
+		for (BEDFeature feat : iter) {
+		
+			String chr =feat.getChr();
+			
+			String data = "\r"+"BAM file: "+bam_file_name+". Percent of transcripts finished: "+ String.format("%.5f", x/bed_line_numb*100) +"%";
+			
+	        //String data = "\r" + anim.charAt( Math.round(x/bed_line_numb) % anim.length()) + " " + Math.round(x/bed_line_numb);
+	        System.out.write(data.getBytes());
+	        
+			x++;
+			
 			// System.out.println(st);
 			int count_of_exon = feat.getExons().size();
 			if (count_of_exon < 3) {
 				continue;
 			}
 			
-			
-			
 			if(!feat.getChr().startsWith("chr") ) {
 				continue;
 			}
 			
-			
-			if(feat.getChr().contains("gl") | feat.getChr().contains("Un_") ) {
+			if(!contig_names.contains(chr) ) {
+				System.out.println("\nChromosome contig not found in BAM file: "+ chr);
 				continue;
 			}
 			
-			String strand=feat.getStrand().toString();
-			String trans_name=feat.getName();
 			
-			//String[] array = trans_name.split("\\.",-1); 
-			
-			//trans_name=array[0];
-			
-			//if(!target_trans.contains(trans_name) ) {
+			//if(feat.getChr().contains("gl") || feat.getChr().contains("Un_") ) {
 			//	continue;
 			//}
+			
+			String strand=feat.getStrand().toString();
+			String trans_name=feat.getName();
 			
 			
 			int trans_start=feat.getStart();
 			
 			int trans_end=feat.getEnd();
-			
 			
 
 			/*
@@ -187,7 +312,6 @@ public class ISOLarge {
 
 				Exon e=feat.getExons().get(i);
 
-				String chr =feat.getChr();
 
 				int start = e.getCdStart();
 
@@ -200,17 +324,13 @@ public class ISOLarge {
 			}
 			
 			
-			
 			for (int i = 1; i < (count_of_exon ); i++) {
 
 				Exon e=feat.getExons().get(i);
 				
-				String chr =feat.getChr();
-				int start = e.getCdStart();
+				//String chr =feat.getChr();
 				
-				//int end = e.getCdEnd();
-				
-				
+				int start = e.getCdStart();				
 				
 				int left_int_coor=feat.getExons().get(i-1).getCdEnd()+1;
 
@@ -219,21 +339,38 @@ public class ISOLarge {
 				
 				HashSet<String> cover_left_names = new HashSet<String>();
 				
-				//HashSet<String> cover_right_names = new HashSet<String>();
+				HashSet<String> left_jc_names = new HashSet<String>();
 				
-				if(unique_int & two_int_coord.contains(chr+":"+left_int) ) {
+				
+				HashSet<String> cover_left_names_intron = new HashSet<String>();
+
+				HashSet<String> left_jc_names_intron = new HashSet<String>();
+
+				
+				if(unique_int && two_int_coord.contains(chr+":"+left_int) ) {
 					continue;
 				}
 				
 				two_int_coord.add(chr+":"+left_int);
-				
-				
 				
 				int right_exon_start=start;
 				
 				int left_exon_end=left_int_coor-1;
 				
 				boolean exon_ri_a3_a5_likely_bias=false;
+				
+				int anchor_region_len=100;
+
+				int intron_flank_threshold= t_threshold;
+
+				//if anchor_region_len longer than the intron
+				if(anchor_region_len> (right_exon_start-left_exon_end-1)) {
+					anchor_region_len=right_exon_start-left_exon_end-1;
+				}
+				
+				if(intron_flank_threshold> (right_exon_start-left_exon_end-1)) {
+					intron_flank_threshold=right_exon_start-left_exon_end-1-1;
+				}
 				
 				//correct for a5ss and a3ss, to avoid bias of exon consider as introns
 				if(e_map.containsKey(chr+":"+start)) {
@@ -259,14 +396,11 @@ public class ISOLarge {
 				}
 				
 				
-				//CloseableIterator<SAMRecord> r = reader.queryContained(chr, start, end);
-				
-				//System.out.println(chr+":"+left_int_coor+"-"+(start-1));
 				CloseableIterator<SAMRecord> r = null;
 				//System.out.println(chr);System.out.println(left_int_coor);System.out.println(start);
 
 				try {
-					r=reader.query(chr, left_int_coor, start-1,false);
+					r=reader.query(chr, left_int_coor-1, start+1,false);
 				}catch(Exception e1) {
 					System.out.println(e1.getMessage());
 					e1.printStackTrace();
@@ -274,27 +408,22 @@ public class ISOLarge {
 
 					continue;
 				}
-				//reader.queryContained(arg0, arg1, arg2)
+				
+				
 				while (r.hasNext()) {
 					
 					SAMRecord recode = r.next();
-					// String att=recode.getStringAttribute("jI");
-					// boolean is_neg = recode.getReadNegativeStrandFlag();
 					
 					//bwa, mapping quality >0 is unique map
 					if( (recode.getMappingQuality()<1)  ) {
 						continue;
 					}
 					
-					//star mapping, 255 is unique mapping
-					//if( (recode.getMappingQuality()<255) & recode.hasAttribute("jI") ) {
-					//	continue;
-					//}
-					
 					if(recode.getReadLength()<30 ) {
 						continue;
 					}
 					
+					//star mapping, 255 is unique mapping
 					//STAR has NH tag, >1 not unique, =1 unique mapping
 					if(recode.hasAttribute("NH") ) {
 						if(recode.getIntegerAttribute("NH")>1) {
@@ -303,37 +432,15 @@ public class ISOLarge {
 						
 					}
 					
-					
-					//boolean if_first=recode.getFirstOfPairFlag();
-					//String name = recode.getReadName()+if_first;
-					String name = recode.getReadName();
-
-					// String pair_name=recode.getPairedReadName();
-
-					
-					//boolean cover_left = (recode.getStart() < (start - 10)) & (recode.getEnd() > (start + 10));
-					//boolean cover_right = (recode.getStart() < (end - 10)) & (recode.getEnd() > (end + 10));
-
-					
+					String name = recode.getReadName();				
 					
 					boolean cover_left=false;
 					//boolean cover_right=false;
 					
 					boolean has_N = recode.getCigar().containsOperator(CigarOperator.N);
 					
-					int anchor_region_len=100;
-					
-					if(anchor_region_len> (right_exon_start-left_exon_end-1)) {
-						anchor_region_len=right_exon_start-left_exon_end-1;
-					}
-					
-					if(intron_flank_threshold> (right_exon_start-left_exon_end-1)) {
-						intron_flank_threshold=right_exon_start-left_exon_end-1-1;
-					}
-					
 					
 					if(has_N) {
-						//int[] att = recode.getSignedIntArrayAttribute("jI");
 						
 						int[] att =null;
 						
@@ -343,13 +450,10 @@ public class ISOLarge {
 							att=Reada5a3.get_splice_junction_pos(recode.getCigar(),recode.getStart() );
 						}
 						
-						
-						if(att.length==0) {
+						if(att.length<2) {
 							continue;
 						}
 						
-				        //int att_min = Arrays.stream(att).min().getAsInt();
-				        //int att_max = Arrays.stream(att).max().getAsInt();
 						
 						/*
 						 * has junction, and junction are compatible with transcript
@@ -362,19 +466,46 @@ public class ISOLarge {
 							}
 				        }
 						
-				        boolean no_left_sj=true;
-				        //boolean no_right_sj=true;
 				        
-				        //no_left_sj=(att_min > start-1) | (att_max < left_int_coor);
+				        boolean no_left_sj=true;				        
+				        
+				        //the minimum of intron length and intron flank threshold
+				        //int intron_flank_threshold_adjust=Math.min(intron_flank_threshold,  start-left_int_coor );
+				        
+				        
+				        // if the junctions in this read contain the intron, add this read to the left_jc_names
+						for ( int j = 0; j < (Math.floor(att.length / 2) ); j++) {
+							
+							if((att[ j * 2] == left_int_coor) &&  (att[ j * 2+1] == start-1 ) ) {
+				        		no_left_sj=false;
+				        		
+								if( (recode.getStart() < left_int_coor- intron_flank_threshold) &&
+										(recode.getEnd() > start-1+intron_flank_threshold)	) {
+									
+					        		left_jc_names.add(name);
+					        		
+					        		break;
+								}
+							}
+						}
+				        
+						if(no_left_sj==false) {
+							cover_left=false;
+							continue;
+						}
+				        
 				        
 				        //no junction site in the intron
 				        for(int tt=0;tt<att.length;tt++) {
-				        	if( (att[tt]<=start-1) & (att[tt]>=left_exon_end+1 ) ) {
+				        	if( (att[tt]<=start-1) && (att[tt]>=left_exon_end+1 ) ) {
 				        		no_left_sj=false;
 				        	}
-				        	
 				        }
 				        
+						if(no_left_sj==false) {
+							cover_left=false;
+							continue;
+						}
 				        
 				        //no overlap junc span the intron,
 				        //if no junc span the intron, either, the junction are in right or left of the intron
@@ -382,10 +513,7 @@ public class ISOLarge {
 				        if(no_left_sj==true) {
 							for ( int j = 0; j < (Math.floor(att.length / 2) ); j++) {
 	
-								//String one_region = recode.getContig() + ":" + (att[1 + i * 2] + 1) + "-"
-								//		+ (att[2 + i * 2] - 1);
-								//String one_region = recode.getContig() + ":" + (att[ j * 2] ) + "-"+ (att[ j * 2+1] );
-								if((att[ j * 2]<=start-1) &  (att[ j * 2+1]>=left_int_coor ) ) {
+								if((att[ j * 2]<=start-1) &&  (att[ j * 2+1]>=left_int_coor ) ) {
 					        		no_left_sj=false;
 					        		continue;
 								}
@@ -393,50 +521,46 @@ public class ISOLarge {
 							}
 				        }
 				        
+						if(no_left_sj==false) {
+							cover_left=false;
+							continue;
+						}
 						
 						
 						if(consider_exon_in_intron) {
-				        /*
-				         *  force the read overlap with intron at least intron_flank_threshold bp. 
-				         *  read must around with intron-exon junction ( -80bp->0) to ensure not spliced. 
-				         *  and the minimum bases in this region is intron_flank_threshold
-				         *  
-				         */
+					        /*
+					         *  force the read overlap with intron at least intron_flank_threshold bp. 
+					         *  read must around with intron-exon junction ( -80bp->0) to ensure not spliced. 
+					         *  and the minimum bases in this region is intron_flank_threshold
+					         *  
+					         */
+								
+							cover_left = (no_left_sj) && (
+									( (recode.getStart() <= (right_exon_start - intron_flank_threshold)) &&
+									(recode.getEnd() >= (right_exon_start - anchor_region_len+intron_flank_threshold) )    ) ||
+									(   (recode.getStart() <=(left_exon_end + anchor_region_len-intron_flank_threshold) )  &&
+									(recode.getEnd() >= (left_exon_end + intron_flank_threshold)) )
+									);
 							
-						cover_left = (no_left_sj) & (
-								( (recode.getStart() <= (right_exon_start - intron_flank_threshold)) &
-								(recode.getEnd() >= (right_exon_start - anchor_region_len+intron_flank_threshold) )    ) |
-								(   (recode.getStart() <=(left_exon_end + anchor_region_len-intron_flank_threshold) )  &
-								(recode.getEnd() >= (left_exon_end + intron_flank_threshold)) )
-								);
 						}else {
-							cover_left = (no_left_sj) & (
-									( (recode.getStart() <= (right_exon_start - intron_flank_threshold))    ) &
+							cover_left = (no_left_sj) && (
+									( (recode.getStart() <= (right_exon_start - intron_flank_threshold))    ) &&
 									(   
 									(recode.getEnd() >= (left_exon_end + intron_flank_threshold)) )
 									);
 						}
-						
-						
-				        /*
-						cover_left = (end<att_min) & (
-								( (recode.getStart() < (bound_start - intron_flank_threshold)) &
-								(recode.getEnd() > (bound_start - 80) )    ) |
-								(   (recode.getStart() < (left_int_coor + 80) )  &
-								(recode.getEnd() > (left_int_coor + intron_flank_threshold)) )
-								);
-						*/					
+										
 				 
 					}else {
 						if(consider_exon_in_intron) {
 
-						cover_left = ( (recode.getStart() <= (right_exon_start - intron_flank_threshold)) &
-								(recode.getEnd() >= (right_exon_start - anchor_region_len+intron_flank_threshold) )    ) |
-								(   (recode.getStart() <= (left_exon_end + anchor_region_len-intron_flank_threshold) )  &
+						cover_left = ( (recode.getStart() <= (right_exon_start - intron_flank_threshold)) &&
+								(recode.getEnd() >= (right_exon_start - anchor_region_len+intron_flank_threshold) )    ) ||
+								(   (recode.getStart() <= (left_exon_end + anchor_region_len-intron_flank_threshold) )  &&
 								(recode.getEnd() >= (left_exon_end + intron_flank_threshold)) );
 						}else {
 							
-							cover_left = ( (recode.getStart() <= (right_exon_start - intron_flank_threshold))  ) &
+							cover_left = ( (recode.getStart() <= (right_exon_start - intron_flank_threshold))  ) &&
 									(  
 									(recode.getEnd() >= (left_exon_end + intron_flank_threshold)) );
 						}
@@ -444,21 +568,19 @@ public class ISOLarge {
 						
 					}
 					
-					if (cover_left)
+					if (cover_left) {
 						cover_left_names.add(name);
-					/*
-					if (cover_right)
-						cover_right_names.add(name);
-					*/
+					}
 					
 				}
 				
 				r.close();
 				
+				
 				CloseableIterator<SAMRecord> r_sec = null;
 				
 				if(cover_left_names.size()==0) {
-					continue;
+					//continue;
 				}
 				
 				if(consider_large_int) {
@@ -476,30 +598,27 @@ public class ISOLarge {
 						continue;
 					}
 					
-					//star mapping, 255 is unique mapping
-					//if( (recode.getMappingQuality()<255) & recode.hasAttribute("jI") ) {
-
-					//	continue;
-					//}
 					
 					if(recode.getReadLength()<30 ) {
-
 						continue;
 					}
 					
+					//STAR mapping, 255 is unique mapping
 					//STAR has NH tag, >1 not unique, =1 unique mapping
 					if(recode.hasAttribute("NH") ) {
 						if(recode.getIntegerAttribute("NH")>1) {
 							continue;
 						}
-						
 					}
-
-					/*
-					if (!recode.getProperPairFlag() ) {
+					
+					String paired_name=recode.getReadName();
+					
+					if (cover_left_names.contains(paired_name) ) {
+						//output_one_read_name.write(paired_name+"\n");
+						
+					}else if(!left_jc_names.contains(paired_name)) {
 						continue;
 					}
-					 */
 					
 					
 					int[] att =null;
@@ -510,81 +629,99 @@ public class ISOLarge {
 						att=Reada5a3.get_splice_junction_pos(recode.getCigar(),recode.getStart() );
 					}
 					
-					boolean has_jc = att.length > 0;
-
+					boolean has_jc = (att.length > 0);
+					
 					if (!has_jc) {
-
+						
 						continue;
 					}
 					
+					//if no junctions break
+					if (att.length < 2) {
+
+						continue;
+					}
 					
 					boolean is_all_junctions_in_intron=Reada5a3.all_junctions_in_intron(all_introns,all_intron_trans, chr, att);
 			        
 					if(!is_all_junctions_in_intron) {
 						continue;
 					}
-					
-					
-					
-					String low_int = "";
+								
+					//String low_int = "";
 
-					//boolean if_first=recode.getFirstOfPairFlag();
-					
-					//String paired_name=recode.getReadName()+!if_first;
-					String paired_name=recode.getReadName();
-
-					//String paired_name=recode.getPairedReadName();
-					
-					//String paired_name=name;
-					
+					/*
 					if (cover_left_names.contains(paired_name) ) {
-						low_int = left_int;
+						//low_int = left_int;
 					} else {
 						continue;
 					}
+					*/
 					
-					if (att.length < 2) {
-
-						continue;
-					}
-
-					// for(int i=0;i<((att.length/2)-1);i++) {
+					//output candidate read names for picard extract target reads
+					//if the read don't related to this intron
+					
 					for ( int j = 0; j < (Math.floor(att.length / 2) ); j++) {
-
-						//String one_region = recode.getContig() + ":" + (att[1 + i * 2] + 1) + "-"
-						//		+ (att[2 + i * 2] - 1);
-						String one_region = recode.getContig() + ":" + (att[ j * 2] ) + "-"+ (att[ j * 2+1] );
 						
-						one_region = trans_name+"\t"+low_int + "\t" + one_region+"\t"+strand+"\t"+exon_ri_a3_a5_likely_bias;
-
-						if (!interest_iso.containsKey(one_region)) {
-							interest_iso.put(one_region, 1);
+						String right_jc = recode.getContig() + ":" + (att[ j * 2] ) + "-"+ (att[ j * 2+1] );
+						
+						String one_region = trans_name+"\t"+left_int + "\t" + right_jc+"\t"+strand+"\t"+exon_ri_a3_a5_likely_bias;
+						
+						if(left_int == right_jc) {
 							continue;
 						}
-
-						int one_rcount = interest_iso.get(one_region);
-						interest_iso.put(one_region, one_rcount + 1);
-
-						//output_one.write(m.getKey() + "\t" + m.getValue());
-						//output_one.write(output_one+"\t"+(one_rcount+1) );
-						//output_one.newLine();
-
+						
+						
+						//if the read cover the intron
+						if (cover_left_names.contains(paired_name) ) {
+							
+							//two read in same fragment may overlapped, the below sentence avoid this bias
+							//the read may overlapped some introns but not some others.
+							//For every read or read pair, only 
+							if (cover_left_names_intron.contains(paired_name+"-"+right_jc) ) {
+								continue;
+							}else {
+								cover_left_names_intron.add(paired_name+"-"+right_jc);
+							}
+							
+							if (!interest_iso.containsKey(one_region)) {
+								interest_iso.put(one_region, 1);
+								continue;
+							}
+							
+							int one_rcount = interest_iso.get(one_region);
+							interest_iso.put(one_region, one_rcount + 1);
+						}
+						
+						
+						//if the read contain the junction which is just the intron
+						if(left_jc_names.contains(paired_name) ) {
+							
+							//two read in same fragment may overlapped, the below sentence avoid this bias
+							//the read may overlapped some introns but not some others.
+							if (left_jc_names_intron.contains(paired_name+"-"+right_jc) ) {
+								continue;
+							}else {
+								left_jc_names_intron.add(paired_name+"-"+right_jc);
+							}
+							
+							//output_one_read_name.write(one_region+"\t"+paired_name+"\n");
+							
+							if (!read_support_jc_pair.containsKey(one_region)) {
+								read_support_jc_pair.put(one_region, 1);
+								continue;
+							}
+							
+							int one_rcount = read_support_jc_pair.get(one_region);
+							read_support_jc_pair.put(one_region, one_rcount + 1);
+							
+						}
+							
 					}
+					
 
-					/*
-					 * if(att.length>4) { String
-					 * one_region=recode.getContig()+":"+(att[1]+1)+"-"+(att[2]-1);
-					 * all_exon.add(one_region);
-					 * 
-					 * 
-					 * one_region=recode.getContig()+":"+(att[3]+1)+"-"+(att[4]-1);
-					 * all_exon.add(one_region); //System.out.println( one_region ); continue; }
-					 * 
-					 * 
-					 * if(att.length>2) { String
-					 * one_region=recode.getContig()+":"+(att[1]+1)+"-"+(att[2]-1);
-					 * all_exon.add(one_region); //System.out.println( one_region ); continue; }
-					 */
+					
+
 					
 				}
 				r_sec.close();
@@ -593,35 +730,53 @@ public class ISOLarge {
 			
 			
 			for (Entry<String, Integer> m : interest_iso.entrySet()) {
-				output_one.write(m.getKey() + "\t" + m.getValue());
+				
+				int read_number_support_jc=0;
+				if(read_support_jc_pair.containsKey(m.getKey())) {
+					read_number_support_jc=read_support_jc_pair.get(m.getKey());
+				}
+				
+				output_one.write(m.getKey() + "\t" + m.getValue()+"\t"+read_number_support_jc);
+				
 				output_one.newLine();
+				
+				total_intron_splicing_order_pair++;
+				
 			}
 			
 			interest_iso.clear();
 			
+			read_support_jc_pair.clear();
 		}
 
-		/*
+		
 		for (Entry<String, Integer> m : interest_iso.entrySet()) {
-			output_one.write(m.getKey() + "\t" + m.getValue());
+			
+			int read_number_support_jc=0;
+			if(read_support_jc_pair.containsKey(m.getKey())) {
+				read_number_support_jc=read_support_jc_pair.get(m.getKey());
+			}
+			
+			output_one.write(m.getKey() + "\t" + m.getValue()+"\t"+read_number_support_jc) ;
+			
 			output_one.newLine();
+		}
+		
+		String data = "\r"+"BAM file: "+bam_file_name+". Percent of transcripts finished: "+ String.format("%.5f", 1.0*100.0) +"%";
+		
+		System.out.write(data.getBytes());
+        
+		System.out.println("\nBam file finished: "+bam_file_name+
+				". Total intron splicing order pairs: "+ total_intron_splicing_order_pair );
+		
+		read_support_jc_pair.clear();
 
-		}
-		*/
-		
-		for (Entry<String, Integer> m : interest_iso.entrySet()) {
-			output_one.write(m.getKey() + "\t" + m.getValue());
-			output_one.newLine();
-		}
-		
 		interest_iso.clear();
 		
 		output_one.close();
+		
+		output_one_read_name.close();
 
-		/*
-		 * it = all_exon.iterator(); // why capital "M"? while(it.hasNext()) {
-		 * output_one.write(it.next()); output_one.newLine(); } output_one.close();
-		 */
 
 	}
 	

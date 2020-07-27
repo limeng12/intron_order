@@ -19,7 +19,7 @@ sourceCpp("code/mlp3.cpp",cleanupCacheDir=FALSE);
 
 #can't be too small, influcence too much to the MLE
 
-find_path_global<-function(t_adj_mat, t_alpha_v=0.05){
+find_path_global<-function(t_adj_mat, t_alpha_v=0.05,is_verbose=FALSE){
   
   path_list<-NULL;
   
@@ -45,7 +45,8 @@ find_path_global<-function(t_adj_mat, t_alpha_v=0.05){
   
   best_order<-path_list$best_order;
   best_score<-calp2(t_adj_mat,best_order,t_alpha_v) ;
-  
+  permut_p<-path_list$permut_p;
+  #print(permut_p);
   
   number_of_maximum_order<-path_list$number_of_maximum_order
   
@@ -93,11 +94,16 @@ find_path_global<-function(t_adj_mat, t_alpha_v=0.05){
     p_t<- -10000;
   }
   
-  if(!is.null(number_of_maximum_order)){
+  if(is_verbose&&(!is.null(number_of_maximum_order)) ){
     print(str_c("Best path number: ", number_of_maximum_order ) );
   }
   
+  if(permut_p<=0){
+    permut_p=1/1000000;
+  }
+    
   list(p_value=p_t,
+       permut_p=permut_p,
        chi_stat=(-1)*chi_stat/2,
        best_order=best_order,bs=chi_stat*(-1)/2,
        rela_likeli_v=NA, 

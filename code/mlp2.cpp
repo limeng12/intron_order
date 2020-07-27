@@ -27,6 +27,44 @@ double calp2_c(double **t_read_count_mat_li,std::vector<int>& order_arr){
 }
 
 
+double calp2_p_v(double **t_read_count_mat_li, int t_dim, int sim_times=1000000){
+  
+  std::vector<int> init_order_p_v(t_dim);
+  
+  for(int i = 0; i <t_dim; i++)
+    init_order_p_v[i] = i;
+  
+  
+  
+  double p_v=0;
+  
+  std::sort( init_order_p_v.begin(),init_order_p_v.end() ); 
+  
+  float in_order_li=calp2_c(t_read_count_mat_li,init_order_p_v);
+  
+  
+  double number_of_less_than_in_order=0;
+  
+  for(int i=0;i< sim_times;i++){
+    std::random_shuffle ( init_order_p_v.begin(), init_order_p_v.end() );
+    
+    double tmp_li=calp2_c(t_read_count_mat_li,init_order_p_v);
+    
+    if(tmp_li<=in_order_li ){
+      number_of_less_than_in_order++;
+    }
+    
+  }
+  //number_of_less_than_in_order
+  
+  double permut_p=number_of_less_than_in_order/sim_times;
+  
+  return permut_p;
+}
+
+
+
+
 std::vector<int> hill_iter_c(double **t_read_count_mat_li,std::vector<int> init_order, std::set<int> full_order){
   
   double best_score=INT_MIN;
@@ -134,10 +172,14 @@ Rcpp::List hill_c(Rcpp::NumericMatrix t_read_count_mat,double t_alpha_v=0.1){
   for(int i = 0; i <dim; i++)
     init_order[i] = init_order[i]+1;
   
+  //double permut_p=calp2_p_v(read_count_mat_li,dim);
+  double permut_p=0;
   
   Rcpp::List L = Rcpp::List::create(Rcpp::Named("best_order") = init_order ,
                                     Rcpp::_["best_score"] = max_li,
-                                    Rcpp::_["number_of_maximum_order"]=NA_INTEGER);
+                                    Rcpp::_["number_of_maximum_order"]=NA_INTEGER,
+                                    Rcpp::_["permut_p"]=permut_p
+                                    );
   
   return L; 
 }

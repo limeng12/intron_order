@@ -1,6 +1,26 @@
-
 library(dbscan);
 
+
+get_intron_pos_index<-function(t_igraph_list, t_intron_pos_mat_fr){
+  
+  for( i in 1:length(t_igraph_list) ){
+    
+    intron_pos_mat_fr_one<-t_intron_pos_mat_fr[t_intron_pos_mat_fr$trans_id==t_igraph_list[[i]]$trans_id,];
+    intron_pos_mat_fr_one<-intron_pos_mat_fr_one[order(intron_pos_mat_fr_one$intron_order,decreasing=FALSE),];
+    
+    intron_pos_index_fr_one<-data.frame(
+      pos=str_c(intron_pos_mat_fr_one[,"chr"],":",intron_pos_mat_fr_one[,"start"],"-",intron_pos_mat_fr_one[,"end"]),
+      index=intron_pos_mat_fr_one[,"intron_order"],
+      stringsAsFactors=FALSE
+    );
+    
+    t_igraph_list[[i]]$index_pos_fr<-(intron_pos_index_fr_one)
+    
+  }
+  
+  return(t_igraph_list);
+  
+}
 
 get_members<-function(t_igraph_list,t_alpha){
   
@@ -8,6 +28,9 @@ get_members<-function(t_igraph_list,t_alpha){
     mermbers<-get_members_matrix(t_igraph_list[[i]]$adjacency_matrix,t_alpha);
     
     t_igraph_list[[i]]$members<-mermbers;
+    
+    
+    
     
   }
   
@@ -109,9 +132,7 @@ get_members_matrix<-function(tt_adj_mat,t_alpha_v=0.05){
 #library(RColorBrewer)
 #library(PReMiuM);
 #cols1<-brewer.pal(12, name = 'Set3') ;
-
 #cols2<-brewer.pal(8, name = 'Dark2') ;
-
 #cols3<-brewer.pal(12, name = 'Paired') 
 
 #cols<-c(cols1,cols2,cols3);
