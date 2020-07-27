@@ -1,29 +1,11 @@
 ## Intron Splicing Order
 http://intron-splicing-order.online:3838/iso/
 
-### Code Ocean
-This repository is compatibility with Code Ocean to facilitate reproducibility
-
-To reproduce the result in Code Ocean:
-1. Git clone this repository into a `capsule` in Code Ocean
-2. Set `R` as running environment and add the prerequisite R packages below in the environment setting in the capsule.
-3. Set `code/run_all.R` as `file to run`
-4. Click the `Reproducible Run`
-
-I have tested it in my own capsule. 
-
 ### Intermediate results
 This repository also includes intermediate results and data for this work. 
 
-The results for each organism are stored seperatelly in each folder `human`,`zebrafish`,`fly`,`pombe`,`yeast`. 
 
- `all_MLO_Plot.pdf` stores intron splicing read count graph order by most likely order.
- 
- `all_MLO_Table.pdf` stores intron splicing frequency matrix order by most likely order.
- 
  `best_order.tsv` stores the calculated most likely order for this organism. 
-
- The anootation for each organism are stored seperatelly under folder `data/`: `zebrafish`,`fly`,`pombe`,`yeast`. 
  
  
  `*no_thick.bed` stores transcripts annotations.
