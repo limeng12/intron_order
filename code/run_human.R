@@ -1,3 +1,4 @@
+# setwd("/Users/mengli/Documents/projects/iso/intron_order");
 
 
 files_all_iso_pairs<-list.files("./data/",full.names =TRUE,pattern = "*_intron.tsv");
@@ -22,7 +23,7 @@ t_igraph_list<-get_mlo_pipe(t_bed_anno=bed_anno,
                             t_trans_exp_file="./data/k562_exp_trans_id.tsv",
                             t_read_cov_threshold=0.95,
                             t_trim_trans_id_by_dot=TRUE,
-                            t_reatined_intron_psi_file="rmats_human/RI.MATS.JC.txt");
+                            t_reatined_intron_psi_file="data/rmats_human/RI.MATS.JC.txt");
 
 #dir.create("./results/adj_matrix",showWarnings = FALSE)
 
