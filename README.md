@@ -36,7 +36,7 @@ samtools index <Bam file>
 
 ### 2. Calculating intron splicing order pairs using the custome java program
 ```
-java -jar java/isoLarge.jar  anno/hg19_gencode_from_ucsc_nothick_nocds.bed <bam_file> <output_file> <optional INT e.g. 20>
+java -jar java/isoLarge.jar -i anno/hg19_gencode_from_ucsc_nothick_nocds.bed -ibam <bam_file> -o <output_file> -t <optional INT e.g. 20>
 ```
 The last parameter is the minium length of nucleotides aligned in intron side of intron-exon junction
 
