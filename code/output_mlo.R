@@ -1,5 +1,5 @@
 
-output_mlo<-function(t_igraph_list,t_gene_trans_id_map,t_intron_pos_mat_fr,output_file,t_trim_trans_id_by_dot){
+output_mlo<-function(t_igraph_list,t_gene_trans_id_map,t_intron_pos_mat_fr, output_file,t_trim_trans_id_by_dot){
   
   if(!is.null(t_gene_trans_id_map) ){
     t_gene_trans_id_map_v<-t_gene_trans_id_map[,"gene_symbol"];
@@ -11,7 +11,7 @@ output_mlo<-function(t_igraph_list,t_gene_trans_id_map,t_intron_pos_mat_fr,outpu
   
   print("Summarise and output to file:");
   
-  pb = txtProgressBar(min = 1, max = length(t_igraph_list) , initial = 0, width=100, style=3) 
+  pb = txtProgressBar(min = 0, max = length(t_igraph_list) , initial = 0, width=100, style=3) 
   
   ##add gene symbol intron postion information
   for(g in 1:length(t_igraph_list) ){
@@ -47,7 +47,7 @@ output_mlo<-function(t_igraph_list,t_gene_trans_id_map,t_intron_pos_mat_fr,outpu
              paste0(t_igraph_list[[i]]$best_order,collapse=","),"$",
              (t_igraph_list[[i]]$number_of_maximum_order),"$",
              (t_igraph_list[[i]]$percent_coverage_pair),"$",
-             (t_igraph_list[[i]]$entropy_sum_normalized),"$",
+             (t_igraph_list[[i]]$entropy),"$",
              
              t_igraph_list[[i]]$spearman_rho,"$",
              t_igraph_list[[i]]$spearman_rho_abs,"$",

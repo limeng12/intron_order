@@ -30,8 +30,6 @@ get_members<-function(t_igraph_list,t_alpha){
     t_igraph_list[[i]]$members<-mermbers;
     
     
-    
-    
   }
   
   return(t_igraph_list);
@@ -42,7 +40,7 @@ get_members_matrix<-function(tt_adj_mat,t_alpha_v=0.05){
   
   if( nrow(tt_adj_mat) <=2 ){
     
-    members<-rep(0,nrow(tt_adj_mat))
+    members<-rep(0,nrow(tt_adj_mat) );
     names(members)<-colnames(tt_adj_mat);
     
     

@@ -6,7 +6,7 @@ library(Rcpp)
 
 #dynamic programming
 #source("code/mlp8.R");
-sourceCpp("code/mlp9.cpp",cleanupCacheDir=FALSE);
+#sourceCpp("code/mlp9.cpp",cleanupCacheDir=FALSE);
 sourceCpp("code/mlp10.cpp",cleanupCacheDir=FALSE);
 
 #hill climbing
@@ -19,7 +19,7 @@ sourceCpp("code/mlp3.cpp",cleanupCacheDir=FALSE);
 
 #can't be too small, influcence too much to the MLE
 
-find_path_global<-function(t_adj_mat, t_alpha_v=0.05,is_verbose=FALSE){
+find_path_global<-function(t_adj_mat, t_alpha_v=0.1,is_verbose=FALSE){
   
   path_list<-NULL;
   
@@ -46,23 +46,39 @@ find_path_global<-function(t_adj_mat, t_alpha_v=0.05,is_verbose=FALSE){
   best_order<-path_list$best_order;
   best_score<-calp2(t_adj_mat,best_order,t_alpha_v) ;
   permut_p<-path_list$permut_p;
-  #print(permut_p);
+  entropy_one<-path_list$entropy;
+  
+  if(!is.na(entropy_one)){
+    entropy_one<-entropy_one/log2( factorial(length(best_order) ) );
+  }
+  
+  worst_score<-calp2(t_adj_mat,rev(best_order),t_alpha_v) ;
+  
+  
+  #print(entropy_one);
   
   number_of_maximum_order<-path_list$number_of_maximum_order
   
   m_ini_intron_order<-colnames(t_adj_mat)[order(as.numeric(colnames(t_adj_mat)))];
   
-  avg_li<-calp2(t_adj_mat,m_ini_intron_order,t_alpha_v) ;
+  in_order_spliced_v<-calp2(t_adj_mat,m_ini_intron_order,t_alpha_v) ;
   
   
   #p-value of disorder
-  
   #disorder_p_value<-disorder_p(t_adj_mat,best_order,t_alpha_v);
   disorder_p_value<-NA
   
   #chi_stat<- -2* log(exp(avg_li-best_score) );
   
-  chi_stat<- -2* ((avg_li-best_score) );
+  chi_stat<- -2* ((in_order_spliced_v-best_score) );
+  
+  normalized_relative_likelihood<-(exp(in_order_spliced_v)-0.99*exp(worst_score))/
+    (exp(best_score)-0.98*exp(worst_score));
+    
+  normalized_relative_likelihood<-log(normalized_relative_likelihood);
+  
+  relative_likelihood<- ((in_order_spliced_v-best_score) );
+  
   
   ##p-value of splicing is in order
   df_t<-0;
@@ -102,13 +118,19 @@ find_path_global<-function(t_adj_mat, t_alpha_v=0.05,is_verbose=FALSE){
     permut_p=1/1000000;
   }
     
-  list(p_value=p_t,
-       permut_p=permut_p,
-       chi_stat=(-1)*chi_stat/2,
-       best_order=best_order,bs=chi_stat*(-1)/2,
-       rela_likeli_v=NA, 
-       number_of_maximum_order=number_of_maximum_order,
-       disorder_p_value=disorder_p_value);
+  list(
+    best_order=best_order,
+    number_of_maximum_order=number_of_maximum_order,
+    entropy=entropy_one,
+    normalized_relative_likelihood=normalized_relative_likelihood,
+    chi_stat=relative_likelihood,
+    
+    p_value=p_t,
+    permut_p= log(permut_p),
+       
+    bs=chi_stat*(-1)/2,
+    rela_likeli_v=NA, 
+    disorder_p_value=disorder_p_value);
   
 }
 

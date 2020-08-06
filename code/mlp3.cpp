@@ -91,30 +91,53 @@ Rcpp::List find_best_order_full2_c(Rcpp::NumericMatrix t_read_count_mat,double t
   int number_of_maximum_order=0;
   //std::count(li.begin(), li.end(), max_li);
   
-  double number_of_less_than_in_order=0;
+  double sum_of_less_than_in_order=0;
+  
+  long double entropy=0;
+  
+  long double prob_sum=0;
   
   
   std::vector<float>::iterator li_d;
+  
+  for(li_d=li.begin();li_d!=li.end();li_d++){
+    prob_sum+=std::exp(*li_d);
+  }
+  
   for(li_d=li.begin();li_d!=li.end();li_d++){
     if(std::abs(*li_d-max_li)<=std::numeric_limits<double>::epsilon() ){
       number_of_maximum_order++;
     }
     
+    //std::cout << "probability:" << *li_d << std::endl; 
+    long double prob_one=std::exp(*li_d)/prob_sum;
+    
+    long double entropy_one=prob_one*std::log2(prob_one);
+    
+    //std::cout << "entropy_one:" << entropy_one << std::endl; 
+    
+    entropy+=entropy_one;
+    
     //in_order_li
     if(*li_d<=in_order_li ){
-      number_of_less_than_in_order++;
+      //sum_of_less_than_in_order+= std::exp(*li_d);
+      sum_of_less_than_in_order+= prob_one;
+      
     }
     
   }
   
+  double permut_p=sum_of_less_than_in_order;
   
-  //double permut_p=number_of_less_than_in_order/li.size();
-  double permut_p=0;
+  //double permut_p=sum_of_less_than_in_order/prob_sum;
+  //double permut_p=0;
   
-  for(int i = 0; i <dim; i++)
+  for(int i = 0; i <dim; i++){
     best_order[i] = best_order[i]+1;
+  }
   
-  Rcpp::List L = Rcpp::List::create(Rcpp::Named("best_order") = best_order ,
+  Rcpp::List L = Rcpp::List::create(Rcpp::Named("best_order") = best_order,
+                                    Rcpp::_["entropy"]=-1*entropy,
                                     Rcpp::_["best_score"] = max_li,
                                     Rcpp::_["number_of_maximum_order"]=number_of_maximum_order,
                                     Rcpp::_["permut_p"]=permut_p

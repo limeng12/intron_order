@@ -3,7 +3,7 @@ cal_hetero<-function(t_igraph_list, t_alpha){
   
   cat("\n");
   print("calculate intron splicing order matrix heterogeneity:");
-  pb = txtProgressBar(min = 1, max = length(t_igraph_list), initial = 0, width=100, style=3) 
+  pb = txtProgressBar(min = 0, max = length(t_igraph_list), initial = 0, width=100, style=3) 
   
   
   for(i in 1:length(t_igraph_list) ){

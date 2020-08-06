@@ -44,7 +44,7 @@ get_adj2<-function(t_iso_final,t_iso_slow_sumary,intron_pair_cov_threshold,t_rea
   cat("\n");
   
   print("Build adjacent matrix: ");
-  pb = txtProgressBar(min = 1, max = nrow(t_iso_slow_sumary ), initial = 0, width=100, style=3) ;
+  pb = txtProgressBar(min = 0, max = nrow(t_iso_slow_sumary ), initial = 0, width=100, style=3) ;
   
   
   for(g in 1:nrow(t_iso_slow_sumary)  ){

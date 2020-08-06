@@ -48,21 +48,26 @@ double calp2_p_v(float **t_read_count_mat_li, int t_dim, int sim_times=1000000){
   float in_order_li=calp2_c(t_read_count_mat_li,init_order_p_v);
   
   
-  double number_of_less_than_in_order=0;
+  double sum_of_less_than_in_order=0;
+  
+  double sim_sum=0;
+  
   
   for(int i=0;i< sim_times;i++){
     std::random_shuffle ( init_order_p_v.begin(), init_order_p_v.end() );
     
     double tmp_li=calp2_c(t_read_count_mat_li,init_order_p_v);
     
+    sim_sum+= std::exp(tmp_li);
+    
     if(tmp_li<=in_order_li ){
-      number_of_less_than_in_order++;
+      sum_of_less_than_in_order+=std::exp(tmp_li);
     }
     
   }
   //number_of_less_than_in_order
   
-  double permut_p=number_of_less_than_in_order/sim_times;
+  double permut_p=sum_of_less_than_in_order/sim_sum;
   
   return permut_p;
 }
@@ -365,10 +370,11 @@ Rcpp::List find_opti_dynam_r_cpp_bit(Rcpp::NumericMatrix t_read_count_mat,double
   
   
   //std::cout<<dim;
-  //double permut_p=calp2_p_v(m_read_count_mat_li,dim);
-  double permut_p=0;
+  double permut_p=calp2_p_v(m_read_count_mat_li,dim);
+  //double permut_p=0;
   
   Rcpp::List L = Rcpp::List::create(Rcpp::Named("best_order") = out ,
+                                    Rcpp::_["entropy"]=NA_REAL,
                                     Rcpp::_["best_score"] = ord[dim],
                                     Rcpp::_["number_of_maximum_order"]=NA_INTEGER,
                                     Rcpp::_["permut_p"]=permut_p

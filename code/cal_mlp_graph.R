@@ -5,7 +5,8 @@ cal_mlp<-function(t_igraph_list,t_alpha=0){
   
   cat("\n");
   print("Calculating most likely order: ")
-  pb = txtProgressBar(min = 1, max = length(t_igraph_list), initial = 0, width=100, style=3) 
+  print( length(t_igraph_list) )
+  pb = txtProgressBar(min = 0, max = length(t_igraph_list), initial = 0, width=100, style=3) 
   #setTxtProgressBar(pb,i);
   
   for(i in 1:length(t_igraph_list) ){
@@ -25,8 +26,12 @@ cal_mlp<-function(t_igraph_list,t_alpha=0){
     t_igraph_list[[i]]$p_value<-best_order_ls$p_value;
     
     t_igraph_list[[i]]$chi_stat<-best_order_ls$chi_stat;
+    #t_igraph_list[[i]]$chi_stat<-best_order_ls$normalized_relative_likelihood;
+    
     
     t_igraph_list[[i]]$permut_p<-best_order_ls$permut_p;
+    
+    t_igraph_list[[i]]$entropy<-best_order_ls$entropy;
       
     t_igraph_list[[i]]$number_of_maximum_order<-best_order_ls$number_of_maximum_order;
     
