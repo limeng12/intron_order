@@ -20,7 +20,7 @@ This repository also includes intermediate results and data for this work.
 
 packages within R
 ```
-install.packages(c("readr","Rcpp","dplyr","igraph","dbscan","stringr","gtools","rstudioapi","gridExtra") )
+install.packages(c("readr","Rcpp","dplyr","igraph","dbscan","stringr","gtools","rstudioapi","gridExtra","lpSolve","ggm") )
 ```
 
 ### Calling intron splicing order from users' own BAM files, then need install JAVA (JRE or JDK)

@@ -10,13 +10,13 @@
 #include <iterator>
 #include <Rcpp.h>
 
-float calp2_c(float **t_read_count_mat_li,std::vector<int>& order_arr){
+inline float calp2_c(float **t_read_count_mat_li,std::vector<int>& order_arr, int t_dim){
   
   float p_sum=0;
-  int dim=order_arr.size();
+  //int dim=order_arr.size();
   
-  for(int i=0;i<dim-1;i++){
-    for(int j=i+1;j<dim;j++){
+  for(int i=0;i<t_dim-1;i++){
+    for(int j=i+1;j<t_dim;j++){
       p_sum=p_sum+t_read_count_mat_li[order_arr[i]][order_arr[j]];
     }
     
@@ -57,7 +57,7 @@ Rcpp::List find_best_order_full2_c(Rcpp::NumericMatrix t_read_count_mat,double t
     }
   }
   
-  std::vector<float> li;
+  std::vector<float> li(std::pow(2,dim));
   //li.reserve(std::);
   
   //https://www.geeksforgeeks.org/all-permutations-of-an-array-using-stl-in-c/
@@ -65,17 +65,18 @@ Rcpp::List find_best_order_full2_c(Rcpp::NumericMatrix t_read_count_mat,double t
   std::vector<int> best_order(dim);
   float max_li=INT_MIN;
   
-  for(int i = 0; i <dim; i++)
+  for(int i = 0; i <dim; i++){
     init_order[i] = i;
+  }
   
-  float in_order_li=calp2_c(read_count_mat_li,init_order);
+  float in_order_li=calp2_c(read_count_mat_li,init_order,dim);
   
   std::sort( init_order.begin(),init_order.end() ); 
   
   // Find all possible permutations 
   //std::cout << "Possible permutations are:\n"; 
   do {
-    float tmp_li=calp2_c(read_count_mat_li,init_order);
+    float tmp_li=calp2_c(read_count_mat_li,init_order,dim);
     li.push_back(tmp_li);
     
     if(tmp_li>max_li){
@@ -93,9 +94,9 @@ Rcpp::List find_best_order_full2_c(Rcpp::NumericMatrix t_read_count_mat,double t
   
   double sum_of_less_than_in_order=0;
   
-  long double entropy=0;
+  double entropy=0;
   
-  long double prob_sum=0;
+  double prob_sum=0;
   
   
   std::vector<float>::iterator li_d;
@@ -110,9 +111,9 @@ Rcpp::List find_best_order_full2_c(Rcpp::NumericMatrix t_read_count_mat,double t
     }
     
     //std::cout << "probability:" << *li_d << std::endl; 
-    long double prob_one=std::exp(*li_d)/prob_sum;
+    double prob_one=std::exp(*li_d)/prob_sum;
     
-    long double entropy_one=prob_one*std::log2(prob_one);
+    double entropy_one=prob_one*std::log2(prob_one);
     
     //std::cout << "entropy_one:" << entropy_one << std::endl; 
     
