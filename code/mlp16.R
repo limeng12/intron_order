@@ -1,5 +1,5 @@
 library(lpSolve)
-library(ggm)
+library(igraph)
 library(gtools)
 #library(Rglpk)
 
@@ -96,7 +96,11 @@ lp_kenemy<-function(t_adj_mat,t_alpha_v,verbose_hill=FALSE){
   #                  control = list("verbose" =TRUE, "canonicalize_status" = FALSE) )
   
   #, tm_limit=100000
-  best_order<-topOrder(matrix(a$solution,byrow = TRUE,nrow = n) );
+  #best_order<-topOrder(matrix(a$solution,byrow = TRUE,nrow = n) );
+  
+  g<-graph_from_adjacency_matrix(matrix(a$solution,byrow = TRUE,nrow = n), mode="directed")
+  
+  best_order<-as.numeric(topo_sort(g) )
   
   permut_p<-NA
   entropy<-NA
