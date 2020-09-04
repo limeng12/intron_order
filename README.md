@@ -1,19 +1,6 @@
 ## Intron Splicing Order
 http://intron-splicing-order.online:3838/iso/
 
-### Intermediate results
-This repository also includes intermediate results and data for this work. 
-
-
- `best_order.tsv` stores the calculated most likely order for this organism. 
- 
- 
- `*no_thick.bed` stores transcripts annotations.
-
- `gene_id_tran*` stores gene_id, gene symbol and transcript id.
-
- `iso_pair` stores calculated intron splicing order pairs. 
- 
 ## Prerequisite
 
 ### R and R packages
@@ -36,7 +23,7 @@ samtools index <Bam file>
 
 ### 2. Calculating intron splicing order pairs using the custome java program
 ```
-java -jar java/isoLarge.jar -i anno/hg19_gencode_from_ucsc_nothick_nocds.bed -ibam <bam_file> -o <output_file> -t <optional INT e.g. 20>
+java -jar java/isoLarge.jar -i anno/hg19_gencode_from_ucsc_nothick_nocds.bed -ibam <bam_file> -o <output_file> -t <optional INT e.g. 90>
 ```
 The last parameter is the minium length of nucleotides aligned in intron side of intron-exon junction
 
