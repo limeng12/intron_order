@@ -121,7 +121,7 @@ find_path_global<-function(t_adj_mat, t_alpha_v=0.1,is_verbose=FALSE){
     print(str_c("Best path number: ", number_of_maximum_order ) );
   }
   
-  if(permut_p<=0){
+  if((!is.na(permut_p))&&(permut_p<=0)){
     permut_p=1/1000000;
   }
     
