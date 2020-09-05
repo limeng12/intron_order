@@ -1,8 +1,8 @@
-library(lpSolve)
+#library(lpSolve)
 library(igraph)
 library(gtools)
 #library(Rglpk)
-
+library(lpsymphony)
 
 lp_kenemy<-function(t_adj_mat,t_alpha_v,verbose_hill=FALSE){
   
@@ -31,7 +31,7 @@ lp_kenemy<-function(t_adj_mat,t_alpha_v,verbose_hill=FALSE){
   
   f.obj<-as.vector(t(t_adj_mat_li));
   
-  constraints1<-matrix(nrow=n*(n-1)/2,ncol = n*n)
+  constraints1<-matrix(0,nrow=n*(n-1)/2,ncol = n*n)
   t<-1
   #one_constraint<-rep(0,n*n);
   for(i in 1:nrow(t_adj_mat_li) ){
@@ -87,14 +87,15 @@ lp_kenemy<-function(t_adj_mat,t_alpha_v,verbose_hill=FALSE){
   
   f.rhs<-rep(1,length(f.dir) );
   
-  #bounds<-list(lower=list(ind=1:(n*n),val=rep(0,n*n)),upper=list(ind=1:(n*n),val=rep(1,n*n) ));
+  # bounds<-list(lower=list(ind=1:(n*n),val=rep(0,n*n)),upper=list(ind=1:(n*n),val=rep(1,n*n) ));
   print("Got all coefficients")
   max <- TRUE
-  a<-lp ("max", f.obj, f.con, f.dir, f.rhs, all.int=TRUE, all.bin=TRUE);
-  
-  #a<-Rglpk_solve_LP(obj=f.obj, mat=f.con, dir=f.dir, rhs=f.rhs, max = max,bounds=bounds, types="B",
+  #a<-lp ("max", f.obj, f.con, f.dir, f.rhs, all.int=TRUE, all.bin=TRUE);
+  # bounds=bounds,
+  #a<-Rglpk_solve_LP(obj=f.obj, mat=f.con, dir=f.dir, rhs=f.rhs, max = max, types="B",
   #                  control = list("verbose" =TRUE, "canonicalize_status" = FALSE) )
   
+  a<-lpsymphony_solve_LP(obj=f.obj, mat=f.con, dir=f.dir, rhs=f.rhs, max = max, types="B")
   #, tm_limit=100000
   #best_order<-topOrder(matrix(a$solution,byrow = TRUE,nrow = n) );
   
@@ -105,7 +106,7 @@ lp_kenemy<-function(t_adj_mat,t_alpha_v,verbose_hill=FALSE){
   permut_p<-NA
   entropy<-NA
   
-  list(best_order=best_order, permut_p=permut_p, entropy=entropy);
+  list(best_order=best_order, permut_p=permut_p, entropy=entropy,number_of_maximum_order=NA);
   
 }
 
@@ -113,7 +114,7 @@ lp_kenemy<-function(t_adj_mat,t_alpha_v,verbose_hill=FALSE){
 
 get_test_matrix<-function(){
   
-  t<-12
+  t<-80
   t_alpha_v<-0.1
   adj_mat <- matrix(nrow = t,ncol = t);
   
@@ -140,7 +141,7 @@ get_test_matrix<-function(){
   
   
   lp_kenemy(t_adj_mat,0.01);
-  find_opti_dynam_r_cpp_bit(t_adj_mat, t_alpha_v);
+  #find_opti_dynam_r_cpp_bit(t_adj_mat, t_alpha_v);
   
   
 }

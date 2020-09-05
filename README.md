@@ -7,7 +7,10 @@ http://intron-splicing-order.online:3838/iso/
 
 packages within R
 ```
-install.packages(c("readr","Rcpp","dplyr","igraph","dbscan","stringr","gtools","rstudioapi","gridExtra","lpSolve") )
+install.packages(c("readr","Rcpp","dplyr","igraph","dbscan","stringr","gtools","rstudioapi","gridExtra") )
+```
+```
+BiocManager::install("lpsymphony")
 ```
 
 ### Calling intron splicing order from users' own BAM files, then need install JAVA (JRE or JDK)
