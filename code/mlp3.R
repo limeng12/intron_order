@@ -32,24 +32,10 @@ find_path_global<-function(t_adj_mat, t_alpha_v=0.1,is_verbose=FALSE){
     #path_list<-find_best_order_full2(t_adj_mat,colnames(t_adj_mat),t_alpha_v);
     path_list<-find_best_order_full2_c(t_adj_mat,t_alpha_v);
   }else{
-  #}else if(nrow(t_adj_mat) < 13){
-    #path_list<-find_opti_dynam(t_adj_mat,t_alpha_v);
-    #path_list<-find_opti_dynam_r_cpp(t_adj_mat,t_alpha_v);
-  #  path_list<-find_opti_dynam_r_cpp_bit(t_adj_mat,t_alpha_v);
-    
-  #}else if(nrow(t_adj_mat) < 56){
-    #path_list<-del_find_path_iter(t_adj_mat, t_alpha_v);
-    #path_list<-hill(t_adj_mat,t_alpha_v);
-    #path_list<-hill_c(t_adj_mat,t_alpha_v);
+
     path_list<-lp_kenemy(t_adj_mat,t_alpha_v);
   }
-  #}else{
-  #  path_list<-hill_c(t_adj_mat,t_alpha_v);
-    
-  #}
-  
-  #best_score<-path_list$best_score;
-  
+
   best_order<-path_list$best_order;
   best_score<-calp2(t_adj_mat,best_order,t_alpha_v) ;
   permut_p<-path_list$permut_p;
@@ -140,6 +126,21 @@ find_path_global<-function(t_adj_mat, t_alpha_v=0.1,is_verbose=FALSE){
     disorder_p_value=disorder_p_value);
   
 }
+
+#}else{
+#  path_list<-hill_c(t_adj_mat,t_alpha_v);
+
+#}
+#}else if(nrow(t_adj_mat) < 13){
+#path_list<-find_opti_dynam(t_adj_mat,t_alpha_v);
+#path_list<-find_opti_dynam_r_cpp(t_adj_mat,t_alpha_v);
+#  path_list<-find_opti_dynam_r_cpp_bit(t_adj_mat,t_alpha_v);
+
+#}else if(nrow(t_adj_mat) < 56){
+#path_list<-del_find_path_iter(t_adj_mat, t_alpha_v);
+#path_list<-hill(t_adj_mat,t_alpha_v);
+#path_list<-hill_c(t_adj_mat,t_alpha_v);
+#best_score<-path_list$best_score;
 
 
 calp2<-function(t_adj_mat, t_intron_order, t_alpha_v){

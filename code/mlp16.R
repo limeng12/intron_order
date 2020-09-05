@@ -31,18 +31,19 @@ lp_kenemy<-function(t_adj_mat,t_alpha_v,verbose_hill=FALSE){
   
   f.obj<-as.vector(t(t_adj_mat_li));
   
-  constraints1<-matrix(0,nrow=n*(n-1)/2,ncol = n*n)
+  constraints<-matrix(0,nrow=(n*(n-1)/2+ choose(n,3) *2),ncol = n*n);
+  
   t<-1
   #one_constraint<-rep(0,n*n);
   for(i in 1:nrow(t_adj_mat_li) ){
     for(j in 1:ncol(t_adj_mat_li)){
       if(i>j){
         #one_constraint<-rep(0,n*n);
-        
-        constraints1[t, (i-1)*n+j ]<-1;
-        constraints1[t, (j-1)*n+i ]<-1;
-        
         #constraints1[t,]<-one_constraint;
+        
+        constraints[t, (i-1)*n+j ]<-1;
+        constraints[t, (j-1)*n+i ]<-1;
+        
         t<-t+1        
       }
       
@@ -51,54 +52,49 @@ lp_kenemy<-function(t_adj_mat,t_alpha_v,verbose_hill=FALSE){
   }
   
   
-  
-  f.dir<-rep("==", nrow(constraints1) );
-  
-  
-  all_combns<-combn(n, 3)
-  
-  constraints2<-matrix(0, nrow=ncol(all_combns)*6,ncol = n*n);
-  t<-1
-  
+  all_combns<-combn(n, 3);
+  #constraints2<-matrix(0, nrow=ncol(all_combns)*2,ncol = n*n);
+  #t<-1
   
   for(i in 1:ncol(all_combns)){
-    all_per<-permutations(3,3,all_combns[,i])
-    for(j in 1:nrow(all_per) ){
+    #all_per<-permutations(3,3,all_combns[,i]);
+    #for(j in 1:nrow(all_per) ){
       #one_constraint<-rep(0,n*n);
-      
-      constraints2[t, (all_per[j,1]-1)*n+all_per[j,2] ]<-1
-      constraints2[t, (all_per[j,2]-1)*n+all_per[j,3] ]<-1
-      constraints2[t, (all_per[j,3]-1)*n+all_per[j,1] ]<-1
-      
+    one_combn<-all_combns[,i]; 
+    
+    constraints[t, (one_combn[2]-1)*n+one_combn[1] ]<-1
+    constraints[t, (one_combn[3]-1)*n+one_combn[2] ]<-1
+    constraints[t, (one_combn[1]-1)*n+one_combn[3] ]<-1
       
       #constraints2[t,]<-one_constraint;
-      t<-t+1
+    t<-t+1
       
-    }
+    one_combn<-rev(one_combn);
+    constraints[t, (one_combn[2]-1)*n+one_combn[1] ]<-1
+    constraints[t, (one_combn[3]-1)*n+one_combn[2] ]<-1
+    constraints[t, (one_combn[1]-1)*n+one_combn[3] ]<-1
+                       
+      #constraints2[t,]<-one_constraint;
+    t<-t+1
+
+      
+    #}
     
   }
+  rm(all_combns)
   
-  f.con<-rbind(constraints1,constraints2);
+  f.con<-constraints
   
-  f.dir<-c(f.dir, rep(">=", nrow(constraints2) ) );
-  
-  rm(constraints1,constraints2);
-  
+  f.dir<-rep("==", n*(n-1)/2 );
+  f.dir<-c(f.dir, rep(">=", choose(n,3)*2 ) );
   
   f.rhs<-rep(1,length(f.dir) );
   
-  # bounds<-list(lower=list(ind=1:(n*n),val=rep(0,n*n)),upper=list(ind=1:(n*n),val=rep(1,n*n) ));
   print("Got all coefficients")
   max <- TRUE
-  #a<-lp ("max", f.obj, f.con, f.dir, f.rhs, all.int=TRUE, all.bin=TRUE);
-  # bounds=bounds,
-  #a<-Rglpk_solve_LP(obj=f.obj, mat=f.con, dir=f.dir, rhs=f.rhs, max = max, types="B",
-  #                  control = list("verbose" =TRUE, "canonicalize_status" = FALSE) )
-  
+
   a<-lpsymphony_solve_LP(obj=f.obj, mat=f.con, dir=f.dir, rhs=f.rhs, max = max, types="B")
-  #, tm_limit=100000
-  #best_order<-topOrder(matrix(a$solution,byrow = TRUE,nrow = n) );
-  
+
   g<-graph_from_adjacency_matrix(matrix(a$solution,byrow = TRUE,nrow = n), mode="directed")
   
   best_order<-as.numeric(topo_sort(g) )
@@ -106,7 +102,21 @@ lp_kenemy<-function(t_adj_mat,t_alpha_v,verbose_hill=FALSE){
   permut_p<-NA
   entropy<-NA
   
+  
   list(best_order=best_order, permut_p=permut_p, entropy=entropy,number_of_maximum_order=NA);
+  
+  
+  #f.con<-rbind(constraints,constraints);
+  
+  #, tm_limit=100000
+  #best_order<-topOrder(matrix(a$solution,byrow = TRUE,nrow = n) );
+  
+  #a<-lp ("max", f.obj, f.con, f.dir, f.rhs, all.int=TRUE, all.bin=TRUE);
+  # bounds=bounds,
+  #a<-Rglpk_solve_LP(obj=f.obj, mat=f.con, dir=f.dir, rhs=f.rhs, max = max, types="B",
+  #                  control = list("verbose" =TRUE, "canonicalize_status" = FALSE) )
+  
+  # bounds<-list(lower=list(ind=1:(n*n),val=rep(0,n*n)),upper=list(ind=1:(n*n),val=rep(1,n*n) ));
   
 }
 
@@ -114,7 +124,7 @@ lp_kenemy<-function(t_adj_mat,t_alpha_v,verbose_hill=FALSE){
 
 get_test_matrix<-function(){
   
-  t<-80
+  t<-96
   t_alpha_v<-0.1
   adj_mat <- matrix(nrow = t,ncol = t);
   
