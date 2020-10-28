@@ -42,7 +42,7 @@ Output format
 | Column #4 |     Strand       |
 | Column #5 |     Deprecated |
 | Column #6 |     Read count supports this intron splicing order pair (intron 1 spliced after intron 2) |
-| Column #7 |     Read count supports both two introns are spliced |
+| Column #7 |     Read count supports both two introns were spliced |
 
 ### 3. Calculating most likely intron splicing orders
 If users are not working with Rstudio, then will need to edit the run.R to change the working dir to `intron_order`
