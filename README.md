@@ -32,6 +32,14 @@ The last parameter is the minium length of nucleotides aligned in intron side of
 
 Please put the output file under `data/`, since the R code will treat data/ as directory of intron splicing order pairs files. 
 
+Output format
+| Transcript id            | slower intron coordinate | faster intron coordinate | strand | deprecated | read count supports this intron splicing order pair | read count supports both two introns are spliced |
+| -------------------------|:------------------------:|-------------------------:|-------:|-----------:|----------------------------------------------------:|------------------------------------------------:|
+| ENST00000481619.5_1      | chrX:153674909-153676831 | chrX:153676909-153677037 | +      | false      | 1                                                    | 0                                              |
+| ENST00000481619.5_1      | chrX:153674909-153676831 | chrX:153676909-153677037 | +      | false      | 1                                                    | 0                                              |
+
+
+
 ### 3. Calculating most likely intron splicing orders
 If users are not working with Rstudio, then will need to edit the run.R to change the working dir to `intron_order`
 
