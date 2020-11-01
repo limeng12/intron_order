@@ -55,18 +55,6 @@ intron_order/code/run_human.R
 
 ## For other genomes that are not included here
 
-### Prepare intron splicing order pairs calling annotation
-
-Java program used the HTSJDK to process BAM files, so need replace CDS position into TSS and TES in bed. 
-
-The hg19_gencode_from_ucsc.bed can be easily downloaded using UCSC table browser directly
-
-Script with an example:
-```
-awk '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$1"\t"$2"\t"$9"\t"$10"\t"$11"\t"$12}' hg19_gencode_from_ucsc.bed > hg19_gencode_from_ucsc_nothick_nocds.bed
-```
-
-
 ### Prepare transcription ID and gene symbol information.
 This can be easily got from ENSEMBL BioMart server
 

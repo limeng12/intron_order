@@ -1,5 +1,7 @@
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -222,8 +224,24 @@ public class ISOLarge {
 		//System.out.println("unique intron: "+unique_int);
 				
 		File bed_file = new File(in_bed_path);
-				
-		AbstractFeatureReader<BEDFeature, LineIterator> br = AbstractFeatureReader.getFeatureReader(bed_file.getPath(),
+		
+		File temp_bed_file = File.createTempFile("bed_nothick", "-suffix");
+		
+		FileWriter csvWriter = new FileWriter(temp_bed_file.getPath());
+		
+		String row="";
+		BufferedReader csvReader = new BufferedReader(new FileReader(bed_file.getPath()));
+		while ((row = csvReader.readLine()) != null) {
+		    String[] data = row.split("\t");
+		    // do something with the data
+		    data[6]=data[1];data[7]=data[2];
+		    csvWriter.write(String.join("\t", data)+"\n");
+		}
+		csvReader.close();
+		csvWriter.flush();csvWriter.close();
+		
+		
+		AbstractFeatureReader<BEDFeature, LineIterator> br = AbstractFeatureReader.getFeatureReader(temp_bed_file.getPath(),
 				new BEDCodec(), false);
 		
 		
@@ -363,6 +381,12 @@ public class ISOLarge {
 
 				int intron_flank_threshold= t_threshold;
 
+				//in case future have super long read. 
+				if(intron_flank_threshold > anchor_region_len) {
+					anchor_region_len=intron_flank_threshold+1;
+					
+				}
+				
 				//if anchor_region_len longer than the intron
 				if(anchor_region_len> (right_exon_start-left_exon_end-1)) {
 					anchor_region_len=right_exon_start-left_exon_end-1;
