@@ -38,7 +38,7 @@ Output format
 | ----------|:-------:|
 | Column #1 |     Transcript id                                             |
 | Column #2 |     Intron 1, the coordinate of relatively slower spliced intron       |
-| Column #3 |     Intron 2, the coordinate of relatively faster spliced introns (also include detected junctions)      |
+| Column #3 |     Intron 2, the coordinate of relatively faster spliced introns (also include detected junctions)|
 | Column #4 |     Strand       |
 | Column #5 |     Deprecated |
 | Column #6 |     Read count supports this intron splicing order pair (intron 1 spliced after intron 2) |
