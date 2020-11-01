@@ -57,7 +57,8 @@ intron_order/code/run_human.R
 
 ### Prepare transcription ID and gene symbol information.
 This can be easily got from ENSEMBL BioMart server, please the below file for an example. 
-```data/hg19_ensembl_gene_id_trans_id_map.tsv
+```
+data/hg19_ensembl_gene_id_trans_id_map.tsv
 ```
 
 Column names are:
